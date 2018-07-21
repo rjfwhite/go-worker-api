@@ -45,8 +45,13 @@ func main() {
                fmt.Println("Reading Ops")
                ops := example.Worker_Connection_GetOpList(connection, timeout)
                count := ops.GetOp_count()
-               op := ops.GetOps()
-               fmt.Println(op.GetOp_type())
+
+               for i := 1; i < int(count); i++ {
+                    op := example.Worker_OpList_GetSpecificOp(ops, uint(i))
+                    fmt.Printf("%d:", op.GetOp_type())
+               }
+               fmt.Println()
+
                example.Worker_OpList_Destroy(ops)
                fmt.Printf("Finished Reading %d Ops\n", count)
           }
