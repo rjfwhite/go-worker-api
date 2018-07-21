@@ -29,4 +29,13 @@ void Worker_ReleaseComponentData(Worker_ComponentData* data);
 void Worker_ReleaseComponentUpdate(Worker_ComponentUpdate* update);
 ```
 
+
+Added method to `c_worker.h`
+```
+WORKER_API Worker_Op* Worker_OpList_GetSpecificOp(Worker_OpList* op_list, uint32_t index) {
+    return &(op_list->ops[index]);
+}
+```
+
 Shennanigans around having to copy `SwigcptrStruct_SS_Worker_OpList` as opposed to `SwigcptrWorker_Oplist` etc - seems like a bug in the golang swig generator
+Shennanigans around having to copy `SwigcptrStruct_SS_Worker_Constraint` as opposed to `SwigcptrWorker_Constraint` etc - seems like a bug in the golang swig generator

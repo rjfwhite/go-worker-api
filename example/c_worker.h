@@ -747,6 +747,9 @@ typedef struct Worker_OpList {
   uint32_t op_count;
 } Worker_OpList;
 
+WORKER_API Worker_Op* Worker_OpList_GetSpecificOp(Worker_OpList* op_list, uint32_t index) {
+    return &(op_list->ops[index]);
+}
 
 /** Parameters for configuring a RakNet connection. Used by Worker_NetworkParameters. */
 typedef struct Worker_RakNetNetworkParameters {
