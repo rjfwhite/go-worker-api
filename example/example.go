@@ -710,6 +710,7 @@ extern void _wrap_Worker_OpList_op_count_set_example_9ac2d23d731c03ec(uintptr_t 
 extern swig_intgo _wrap_Worker_OpList_op_count_get_example_9ac2d23d731c03ec(uintptr_t arg1);
 extern uintptr_t _wrap_new_Worker_OpList_example_9ac2d23d731c03ec(void);
 extern void _wrap_delete_Worker_OpList_example_9ac2d23d731c03ec(uintptr_t arg1);
+extern uintptr_t _wrap_Worker_OpList_GetSpecificOp_example_9ac2d23d731c03ec(uintptr_t arg1, swig_intgo arg2);
 extern void _wrap_Worker_RakNetNetworkParameters_heartbeat_timeout_millis_set_example_9ac2d23d731c03ec(uintptr_t arg1, swig_intgo arg2);
 extern swig_intgo _wrap_Worker_RakNetNetworkParameters_heartbeat_timeout_millis_get_example_9ac2d23d731c03ec(uintptr_t arg1);
 extern uintptr_t _wrap_new_Worker_RakNetNetworkParameters_example_9ac2d23d731c03ec(void);
@@ -875,11 +876,10 @@ extern void _wrap_Worker_SnapshotOutputStream_Destroy_example_9ac2d23d731c03ec(u
 extern char _wrap_Worker_SnapshotOutputStream_WriteEntity_example_9ac2d23d731c03ec(uintptr_t arg1, uintptr_t arg2);
 extern swig_type_116 _wrap_Worker_SnapshotOutputStream_GetError_example_9ac2d23d731c03ec(uintptr_t arg1);
 #undef intgo
+
+#cgo CFLAGS: -I.
+#cgo LDFLAGS: -L. -lworker
 */
-//
-// #cgo CFLAGS: -I.
-// #cgo LDFLAGS: -L. -lworker
-//
 import "C"
 
 import "unsafe"
@@ -5660,6 +5660,14 @@ type Worker_OpList interface {
 	GetOps() (_swig_ret Worker_Op)
 	SetOp_count(arg2 uint)
 	GetOp_count() (_swig_ret uint)
+}
+
+func Worker_OpList_GetSpecificOp(arg1 Worker_OpList, arg2 uint) (_swig_ret Worker_Op) {
+	var swig_r Worker_Op
+	_swig_i_0 := arg1.Swigcptr()
+	_swig_i_1 := arg2
+	swig_r = (Worker_Op)(SwigcptrWorker_Op(C._wrap_Worker_OpList_GetSpecificOp_example_9ac2d23d731c03ec(C.uintptr_t(_swig_i_0), C.swig_intgo(_swig_i_1))))
+	return swig_r
 }
 
 type SwigcptrWorker_RakNetNetworkParameters uintptr

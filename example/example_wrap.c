@@ -7583,6 +7583,21 @@ void _wrap_delete_Worker_OpList_example_9ac2d23d731c03ec(struct Worker_OpList *_
 }
 
 
+struct Worker_Op *_wrap_Worker_OpList_GetSpecificOp_example_9ac2d23d731c03ec(Worker_OpList *_swig_go_0, intgo _swig_go_1) {
+  Worker_OpList *arg1 = (Worker_OpList *) 0 ;
+  uint32_t arg2 ;
+  Worker_Op *result = 0 ;
+  struct Worker_Op *_swig_go_result;
+  
+  arg1 = *(Worker_OpList **)&_swig_go_0; 
+  arg2 = (uint32_t)_swig_go_1; 
+  
+  result = (Worker_Op *)Worker_OpList_GetSpecificOp(arg1,arg2);
+  *(Worker_Op **)&_swig_go_result = (Worker_Op *)result; 
+  return _swig_go_result;
+}
+
+
 void _wrap_Worker_RakNetNetworkParameters_heartbeat_timeout_millis_set_example_9ac2d23d731c03ec(struct Worker_RakNetNetworkParameters *_swig_go_0, intgo _swig_go_1) {
   struct Worker_RakNetNetworkParameters *arg1 = (struct Worker_RakNetNetworkParameters *) 0 ;
   uint32_t arg2 ;
