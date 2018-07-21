@@ -1,15 +1,16 @@
 
 
 Had to update `c_worker.h`
-
+```
 //WORKER_API Schema_FieldId
 //Schema_GetCommandResponseComponentId(const Schema_CommandResponse* request);
 /** Get the 1-based position of the command in the order the commands appear in the schema. */
-
+```
 
 
 Had to remove 
 
+```
 /** Acquire a reference to extend the lifetime of a command request owned by the SDK. */
 Worker_CommandRequest* Worker_AcquireCommandRequest(const Worker_CommandRequest* request);
 /** Acquire a reference to extend the lifetime of a command response owned by the SDK. */
@@ -26,3 +27,6 @@ void Worker_ReleaseCommandResponse(Worker_CommandResponse* response);
 void Worker_ReleaseComponentData(Worker_ComponentData* data);
 /** Release a reference obtained by Worker_AcquireComponentUpdate. */
 void Worker_ReleaseComponentUpdate(Worker_ComponentUpdate* update);
+```
+
+Shennanigans around having to copy `SwigcptrStruct_SS_Worker_OpList` as opposed to `SwigcptrWorker_Oplist` etc - seems like a bug in the golang swig generator
