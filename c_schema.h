@@ -124,8 +124,8 @@ WORKER_API Schema_CommandResponse* Schema_CreateCommandResponse(Schema_FieldId c
 /** Free the resources associated with a command response schema type instance. */
 WORKER_API void Schema_DestroyCommandResponse(Schema_CommandResponse* response);
 /** Get the component ID of a command response. */
-WORKER_API Schema_FieldId
-Schema_GetCommandResponseComponentId(const Schema_CommandResponse* request);
+//WORKER_API Schema_FieldId
+//Schema_GetCommandResponseComponentId(const Schema_CommandResponse* request);
 /** Get the 1-based position of the command in the order the commands appear in the schema. */
 WORKER_API Schema_FieldId
 Schema_GetCommandResponseCommandIndex(const Schema_CommandResponse* request);
