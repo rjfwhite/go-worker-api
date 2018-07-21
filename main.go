@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"time"
 	"fmt"
+	"math"
 )
 
 type WORKER_OP_TYPE int
@@ -30,7 +31,45 @@ const (
 	WORKER_OP_TYPE_COMMAND_RESPONSE            WORKER_OP_TYPE = 18
 )
 
+type EntityComponent struct {
+	entity_id int64
+	component_id uint
+}
+
+type Coordinates struct {
+	X float64
+	Y float64
+	Z float64
+}
+type Position struct {
+	Coords Coordinates
+}
+func ReadCoordinates(input example.Schema_Object) Coordinates {
+	return Coordinates {
+		X : example.Schema_GetDouble(input, 1),
+		Y : example.Schema_GetDouble(input, 2),
+		Z : example.Schema_GetDouble(input, 3),
+	}
+}
+func WriteCoordinates(output example.Schema_Object, value Coordinates) {
+	example.Schema_AddDouble(output, 1, value.X)
+	example.Schema_AddDouble(output, 2, value.Y)
+	example.Schema_AddDouble(output, 3, value.Z)
+}
+func ReadPosition(input example.Schema_Object) Position {
+	return Position {
+		Coords : ReadCoordinates(example.Schema_GetObject(input, 1)),
+	}
+}
+func WritePosition(output example.Schema_Object, value Position) {
+	example.Schema_AddObject(output, 1)
+	WriteCoordinates(example.Schema_GetObject(output, 1), value.Coords)
+}
+
 func main() {
+
+	authoritativeComponents := make(map[EntityComponent]bool)
+
 	params := example.Worker_DefaultConnectionParameters()
 	params.SetWorker_type("Managed")
 
@@ -44,7 +83,7 @@ func main() {
 
 	future := example.Worker_ConnectAsync("localhost", 7777, workerId, params)
 
-	timeout := uint(5000)
+	timeout := uint(1000)
 	connection := example.Worker_ConnectionFuture_Get(future, &timeout)
 	example.Worker_ConnectionFuture_Destroy(future)
 
@@ -63,8 +102,10 @@ func main() {
 		fmt.Println("Sent Welcome Log")
 
 		for example.Worker_Connection_IsConnected(connection) > 0 {
+
+
 			//fmt.Println("Reading Ops")
-			ops := example.Worker_Connection_GetOpList(connection, timeout)
+			ops := example.Worker_Connection_GetOpList(connection, uint(100))
 			count := ops.GetOp_count()
 
 			for i := 0; i < int(count); i++ {
@@ -86,12 +127,8 @@ func main() {
 					//fmt.Printf("GOT ADD COMPONENT %d for ENTITY %d\n", component_id, entity_id)
 					if component_id == 54 {
 						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
-						coords := example.Schema_GetObject(fields, 1)
-						x := example.Schema_GetDouble(coords, 1)
-						y := example.Schema_GetDouble(coords, 2)
-						z := example.Schema_GetDouble(coords, 3)
-
-						fmt.Printf("Got Position (%f, %f, %f)", x, y, z)
+						position := ReadPosition(fields)
+						fmt.Println("GOT POSITION ", position)
 					}
 
 				case WORKER_OP_TYPE_LOG_MESSAGE:
@@ -103,37 +140,31 @@ func main() {
 					entity_id := authorityChange.GetEntity_id()
 					component_id := authorityChange.GetComponent_id()
 					authoritative := (authorityChange.GetAuthority() > 0)
-
-					if authoritative && component_id == 54 {
-
-						fmt.Println("SENDING POSITION UPDATE")
-
-						componentUpdate := example.Schema_CreateComponentUpdate(component_id)
-						componentUpdateFields := example.Schema_GetComponentUpdateFields(componentUpdate)
-
-						example.Schema_AddObject(componentUpdateFields, 1)
-						newCoords := example.Schema_GetObject(componentUpdateFields, 1)
-
-						example.Schema_AddDouble(newCoords, 1, 1.0)
-						example.Schema_AddDouble(newCoords, 2, 2.0)
-						example.Schema_AddDouble(newCoords, 3, 3.0)
-
-						workerComponentUpdate := example.NewWorker_ComponentUpdate()
-						workerComponentUpdate.SetComponent_id(component_id)
-						workerComponentUpdate.SetSchema_type(componentUpdate)
-
-						example.Worker_Connection_SendComponentUpdate(connection, entity_id, workerComponentUpdate)
-					}
+					authoritativeComponents[EntityComponent{entity_id:entity_id, component_id:component_id}] = authoritative
 
 				default:
 
 				}
 
+
 				//fmt.Printf("%d:", op.GetOp_type())
 			}
+
+			for ec, value := range(authoritativeComponents) {
+				if value {
+					if ec.component_id == 54 {
+						sendPositionUpdate(connection, ec.entity_id, math.Sin(float64(time.Now().UnixNano()) / 1000000000.0) * 10, 2, 3)
+					}
+				}
+			}
+
+
+
 			example.Worker_OpList_Destroy(ops)
 			//fmt.Printf("Finished Reading %d Ops\n", count)
 		}
+
+
 
 		//fmt.Println("CONNECTED!")
 
@@ -165,4 +196,16 @@ func main() {
 	//     fmt.Print(data)
 	//}
 
+}
+
+func sendPositionUpdate(connection example.Worker_Connection, entity_id int64, x float64, y float64, z float64) {
+	componentUpdate := example.Schema_CreateComponentUpdate(54)
+	componentUpdateFields := example.Schema_GetComponentUpdateFields(componentUpdate)
+
+	WritePosition(componentUpdateFields, Position{Coordinates{x, y, z}})
+
+	workerComponentUpdate := example.NewWorker_ComponentUpdate()
+	workerComponentUpdate.SetComponent_id(54)
+	workerComponentUpdate.SetSchema_type(componentUpdate)
+	example.Worker_Connection_SendComponentUpdate(connection, entity_id, workerComponentUpdate)
 }
