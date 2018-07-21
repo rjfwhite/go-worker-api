@@ -1,21 +1,20 @@
-package example
+package main
 
 
-//
-// #cgo CFLAGS: -I.
-// #cgo LDFLAGS: -L. -lworker
-//
-import "C"
-import "fmt"
+
+import (
+     "fmt"
+     "github.com/rjfwhite/go-worker-api/example"
+)
 
 func main() {
 //     params := Worker_DefaultConnectionParameters()
 //     connection := Worker_ConnectAsync("hostname", 1337, "myworker", params)
-     component := Schema_CreateComponentUpdate(32)
-     fields := Schema_GetComponentUpdateFields(component)
+     component := example.Schema_CreateComponentUpdate(32)
+     fields := example.Schema_GetComponentUpdateFields(component)
 
-     Schema_AddInt32(fields, 1, 32)
-     val := Schema_GetInt32(fields, 1)
+     example.Schema_AddInt32(fields, 1, 32)
+     val := example.Schema_GetInt32(fields, 1)
 
      fmt.Println(val)
 
