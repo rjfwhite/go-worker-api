@@ -1,9 +1,9 @@
-package main
+package example
 
 
 //
-// #cgo CFLAGS: -I./work
-// #cgo LDFLAGS: -L./work -lworker
+// #cgo CFLAGS: -I.
+// #cgo LDFLAGS: -L. -lworker
 //
 import "C"
 import "fmt"
