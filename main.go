@@ -36,36 +36,6 @@ type EntityComponent struct {
 	component_id uint
 }
 
-type Coordinates struct {
-	X float64
-	Y float64
-	Z float64
-}
-type Position struct {
-	Coords Coordinates
-}
-func ReadCoordinates(input example.Schema_Object) Coordinates {
-	return Coordinates {
-		X : example.Schema_GetDouble(input, 1),
-		Y : example.Schema_GetDouble(input, 2),
-		Z : example.Schema_GetDouble(input, 3),
-	}
-}
-func WriteCoordinates(output example.Schema_Object, value Coordinates) {
-	example.Schema_AddDouble(output, 1, value.X)
-	example.Schema_AddDouble(output, 2, value.Y)
-	example.Schema_AddDouble(output, 3, value.Z)
-}
-func ReadPosition(input example.Schema_Object) Position {
-	return Position {
-		Coords : ReadCoordinates(example.Schema_GetObject(input, 1)),
-	}
-}
-func WritePosition(output example.Schema_Object, value Position) {
-	example.Schema_AddObject(output, 1)
-	WriteCoordinates(example.Schema_GetObject(output, 1), value.Coords)
-}
-
 func main() {
 
 	authoritativeComponents := make(map[EntityComponent]bool)
@@ -123,19 +93,19 @@ func main() {
 				case WORKER_OP_TYPE_ADD_COMPONENT:
 					addComponent := op.GetAdd_component()
 					component_id := addComponent.GetData().GetComponent_id()
-					//entity_id := addComponent.GetEntity_id()
-					//fmt.Printf("GOT ADD COMPONENT %d for ENTITY %d\n", component_id, entity_id)
+					entity_id := addComponent.GetEntity_id()
+					fmt.Printf("GOT ADD COMPONENT %d for ENTITY %d\n", component_id, entity_id)
 					if component_id == 54 {
 						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
-						position := ReadPosition(fields)
-						fmt.Println("GOT POSITION ", position)
+						position := ReadPositionUpdate(fields)
+						fmt.Println("GOT POSITION ", position.Coords.X, position.Coords.Y, position.Coords.Z)
 					}
 
 				case WORKER_OP_TYPE_LOG_MESSAGE:
 					fmt.Println("GOT LOG")
 
 				case WORKER_OP_TYPE_AUTHORITY_CHANGE:
-					fmt.Println("Authority Change")
+					//fmt.Println("Authority Change")
 					authorityChange := op.GetAuthority_change()
 					entity_id := authorityChange.GetEntity_id()
 					component_id := authorityChange.GetComponent_id()
@@ -198,11 +168,15 @@ func main() {
 
 }
 
+
+
 func sendPositionUpdate(connection example.Worker_Connection, entity_id int64, x float64, y float64, z float64) {
 	componentUpdate := example.Schema_CreateComponentUpdate(54)
 	componentUpdateFields := example.Schema_GetComponentUpdateFields(componentUpdate)
 
 	WritePosition(componentUpdateFields, Position{Coordinates{x, y, z}})
+
+
 
 	workerComponentUpdate := example.NewWorker_ComponentUpdate()
 	workerComponentUpdate.SetComponent_id(54)
