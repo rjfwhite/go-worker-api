@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/rjfwhite/go-worker-api/example"
-	"fmt"
 )
 
 type Coordinates struct {
@@ -18,6 +17,7 @@ type Position struct {
 type PositionUpdate struct {
 	Coords *Coordinates
 }
+
 type CoordinatesUpdate struct {
 	X *float64
 	Y *float64
@@ -35,17 +35,6 @@ func ReadPositionUpdate(input example.Schema_Object) PositionUpdate {
 
 func ReadCoordinatesUpdate(input example.Schema_Object) CoordinatesUpdate {
 	result := CoordinatesUpdate{}
-
-	{
-		value := 3
-		fmt.Print(value)
-	}
-
-	{
-		value := 4
-		fmt.Print(value)
-	}
-
 	if example.Schema_GetDoubleCount(input, 1) > 0 {
 		value := example.Schema_GetDouble(input, 1)
 		result.X = &value
@@ -88,41 +77,9 @@ func ApplyPositionUpdate(data Position, update PositionUpdate) {
 
 func ReadCoordinates(input example.Schema_Object) Coordinates {
 	result := Coordinates{}
-	{
-		value := example.Schema_GetDouble(input, 1)
-		result.X = value
-	}
-	{
-		value := example.Schema_GetDouble(input, 2)
-		result.Y = value
-	}
-	{
-		value := example.Schema_GetDouble(input, 3)
-		result.Z = value
-	}
-	return result
-}
-
-func ReadListy(input example.Schema_Object) Coordinates {
-
-	count := example.Schema_GetObjectCount(input, 1)
-	for  i := uint(0); i < count; i++ {
-
-	}
-
-	result := Coordinates{}
-	{
-		value := example.Schema_GetDouble(input, 1)
-		result.X = value
-	}
-	{
-		value := example.Schema_GetDouble(input, 2)
-		result.Y = value
-	}
-	{
-		value := example.Schema_GetDouble(input, 3)
-		result.Z = value
-	}
+	result.X = example.Schema_GetDouble(input, 1)
+	result.Y = example.Schema_GetDouble(input, 2)
+	result.Z = example.Schema_GetDouble(input, 3)
 	return result
 }
 

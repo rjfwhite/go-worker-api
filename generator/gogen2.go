@@ -86,7 +86,7 @@ func GenerateReadObjectType(t SchemaType) string {
 	output += fmt.Sprintf("\tinnerObject := example.Schema_GetObject(object, index)\n")
 	output += fmt.Sprintf("\treturn %s {\n", t.Name)
 	for _, f := range t.Fields {
-		output += fmt.Sprintf("\t\t%s : Read%s(innerObject, %d)\n", f.Name, MethodSuffixForType(f.Type), f.Id)
+		output += fmt.Sprintf("\t\t%s : Read%s(innerObject, %d, 0)\n", f.Name, MethodSuffixForType(f.Type), f.Id)
 	}
 	output += "\t}\n"
 	output += "}\n"
