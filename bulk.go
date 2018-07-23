@@ -134,3 +134,35 @@ func ReadPrimitive_fixed32(object example.Schema_Object, field uint, index uint)
 func WritePrimitive_fixed32(object example.Schema_Object, field uint, value uint) {
 	example.Schema_AddFixed32(object, field, value)
 }
+
+
+///// Play Area
+func ReadList_float(object example.Schema_Object, field uint, index uint) []float32 {
+	count := example.Schema_GetFloatCount(object, field)
+	result := []float32{}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadPrimitive_float(object, field, i))
+	}
+	return result
+}
+
+func WriteList_float(object example.Schema_Object, field uint, value []float32)  {
+	for _, element := range(value) {
+		WritePrimitive_float(object, field, element)
+	}
+}
+
+func ReadOption_float(object example.Schema_Object, field uint) *float32 {
+	if example.Schema_GetFloatCount(object, field) > 0 {
+		result := ReadPrimitive_float(object, field, 0)
+		return &result
+	} else {
+		return nil
+	}
+}
+
+func WriteOption_float(object example.Schema_Object, field uint, value *float32)  {
+	if value != nil {
+		WritePrimitive_float(object, field, *value)
+	}
+}
