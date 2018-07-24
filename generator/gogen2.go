@@ -54,7 +54,7 @@ func GenerateReadPrimitiveType(t PrimitiveType) string {
 	function_family := primitive_type_to_function_family[t.Name]
 	output := ""
 
-	output += fmt.Sprintf("func ReadPrimitive_%s(object example.Schema_Object, index uint) %s {\n", t.Name, go_type)
+	output += fmt.Sprintf("func ReadPrimitive_%s(object example.Schema_Object, field uint, index uint) %s {\n", t.Name, go_type)
 
 	boolFix := ""
 	if t.Name == "bool" {
@@ -72,7 +72,7 @@ func GenerateWritePrimitiveType(t PrimitiveType) string {
 	function_family := primitive_type_to_function_family[t.Name]
 	output := ""
 
-	output += fmt.Sprintf("func WritePrimitive_%s(object example.Schema_Object, index uint, value %s) {\n", t.Name, go_type)
+	output += fmt.Sprintf("func WritePrimitive_%s(object example.Schema_Object, field uint, value %s) {\n", t.Name, go_type)
 
 	output += fmt.Sprintf("\texample.Schema_Add%s(object, index, value)\n", function_family)
 	output += "}\n"
@@ -80,13 +80,26 @@ func GenerateWritePrimitiveType(t PrimitiveType) string {
 	return output
 }
 
+func GenerateReadListType(t ListType) string {
+	output := ""
+	output += fmt.Sprintf("func Read%s(object example.Schema_Object, field uint, index uint) %s {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += fmt.Sprintf("\tcount := example.Schema_Get%sCount(object, field)\n", FunctionFamilyFor(t.Type))
+	output += fmt.Sprintf("\tresult := %s{}\n", GoTypeFor(t))
+	output += "\tfor i := uint(0); i < count; i++ {\n"
+	output += fmt.Sprintf("\t\tresult = append(result, Read%s(object, field, i))\n", MethodSuffixForType(t.Type))
+	output += "\t}\n"
+	output += "\treturn result\n"
+	output += "}\n"
+	return output
+}
+
 func GenerateReadObjectType(t SchemaType) string {
 	output := ""
-	output += fmt.Sprintf("func ReadObject_%s(object example.Schema_Object, index uint) %s {\n", t.Name, t.Name)
-	output += fmt.Sprintf("\tinnerObject := example.Schema_GetObject(object, index)\n")
+	output += fmt.Sprintf("func ReadObject_%s(object example.Schema_Object, field uint, index uint) %s {\n", t.Name, t.Name)
+	output += fmt.Sprintf("\tinnerObject := example.Schema_IndexObject(object, field, index)\n")
 	output += fmt.Sprintf("\treturn %s {\n", t.Name)
 	for _, f := range t.Fields {
-		output += fmt.Sprintf("\t\t%s : Read%s(innerObject, %d, 0)\n", f.Name, MethodSuffixForType(f.Type), f.Id)
+		output += fmt.Sprintf("\t\t%s : Read%s(innerObject, %d, 0),\n", f.Name, MethodSuffixForType(f.Type), f.Id)
 	}
 	output += "\t}\n"
 	output += "}\n"
@@ -95,11 +108,11 @@ func GenerateReadObjectType(t SchemaType) string {
 
 func GenerateWriteObjectType(t SchemaType) string {
 	output := ""
-	output += fmt.Sprintf("func WriteObject_%s(object example.Schema_Object, index uint, value %s) {\n", t.Name, t.Name)
-	output += "\texample.Schema_AddObject(object, index)\n"
-	output += fmt.Sprintf("\tinnerObject := example.Schema_GetObject(object, index)\n")
+	output += fmt.Sprintf("func WriteObject_%s(object example.Schema_Object, field uint, value %s) {\n", t.Name, t.Name)
+	output += "\texample.Schema_AddObject(object, field)\n"
+	output += fmt.Sprintf("\tinnerObject := example.Schema_GetObject(object, field)\n")
 	for _, f := range t.Fields {
-		output += fmt.Sprintf("\tWrite%s(innerObject, %d, value.%s),\n", MethodSuffixForType(f.Type), f.Id, f.Name)
+		output += fmt.Sprintf("\tWrite%s(innerObject, %d, value.%s)\n", MethodSuffixForType(f.Type), f.Id, f.Name)
 	}
 	output += "}\n"
 	return output
@@ -128,8 +141,41 @@ func GoTypeFor(t interface{}) string {
 	switch t.(type) {
 	case PrimitiveType:
 		return primitive_type_to_go_type[t.(PrimitiveType).Name]
+	case ListType:
+		return "[]" + GoTypeFor(t.(ListType).Type)
 	case ObjectType:
-		return ""
+		return t.(ObjectType).Name
+	}
+	return ""
+}
+
+func FunctionFamilyFor(t interface{}) string {
+	var primitive_type_to_function_family = map[string]string{
+		"int32":    "Int32",
+		"int64":    "Int64",
+		"uint32":   "Uint32",
+		"uint64":   "Uint64",
+		"sint32":   "Sint32",
+		"sint64":   "Sint64",
+		"fixed32":  "Fixed32",
+		"fixed64":  "Fixed64",
+		"sfixed32": "Sfixed32",
+		"sfixed64": "Sfixed64",
+		"bool":     "Bool",
+		"float":    "Float",
+		"double":   "Double",
+		"string":   "Bytes",
+		"EntityId": "EntityId",
+		"bytes":    "Bytes",
+	}
+
+	switch t.(type) {
+	case PrimitiveType:
+		return primitive_type_to_function_family[t.(PrimitiveType).Name]
+	case ListType:
+		return "Object"
+	case ObjectType:
+		return "Object"
 	}
 	return ""
 }
@@ -140,6 +186,8 @@ func MethodSuffixForType(t interface{}) string {
 		return "Primitive_" + t.(PrimitiveType).Name
 	case ObjectType:
 		return "Object_" + t.(ObjectType).Name
+	case ListType:
+		return "List_" + MethodSuffixForType(t.(ListType).Type)
 	}
 	return ""
 }
@@ -284,12 +332,12 @@ func GenerateWriter(t SchemaType) string {
 }
 
 func main() {
-	//positionFields := []SchemaField{{Name: "Coords", Type: "Coordinates", Id: 1}}
-	//positionType := SchemaType{Package: "", Name: "Position", Fields: positionFields}
-	//
+	positionFields := []SchemaField{{Name: "Coords", Type: ObjectType{Name:"Coordinates"}, Id: 1}}
+	positionType := SchemaType{Package: "", Name: "Position", Fields: positionFields}
 	coordinatesFields := []SchemaField{{Name: "X", Type: PrimitiveType{Name:"double"}, Id: 1}, {Name: "Y", Type: PrimitiveType{Name:"double"}, Id: 2}, {Name: "Z", Type: PrimitiveType{Name:"double"}, Id: 3}}
 	coordinatesType := SchemaType{Package: "", Name: "Coordinates", Fields: coordinatesFields}
 
+	listType := ListType{Type:PrimitiveType{Name:"string"}}
 
 	fmt.Println("package main")
 	//for k, _ := range(primitive_type_to_function_family) {
@@ -299,6 +347,11 @@ func main() {
 
 	fmt.Println(GenerateReadObjectType(coordinatesType))
 	fmt.Println(GenerateWriteObjectType(coordinatesType))
+	fmt.Println(GenerateReadObjectType(positionType))
+	fmt.Println(GenerateWriteObjectType(positionType))
+	fmt.Println(GenerateReadListType(listType))
+	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"Coordinates"}}))
+
 
 	//fmt.Println("package main")
 	//fmt.Print(GenerateStruct(coordinatesType))

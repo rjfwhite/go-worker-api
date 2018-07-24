@@ -48,7 +48,7 @@ func main() {
 
 	rand.Seed(int64(time.Now().UnixNano()))
 
-	workerId := fmt.Sprintf("External%d", rand.Int())
+	workerId := fmt.Sprintf("Managed%d", rand.Int())
 	fmt.Println("WorkerId " + workerId)
 
 	future := example.Worker_ConnectAsync("localhost", 7777, workerId, params)
@@ -96,9 +96,9 @@ func main() {
 					entity_id := addComponent.GetEntity_id()
 					fmt.Printf("GOT ADD COMPONENT %d for ENTITY %d\n", component_id, entity_id)
 					if component_id == 54 {
-						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
-						position := ReadPositionUpdate(fields)
-						fmt.Println("GOT POSITION ", position.Coords.X, position.Coords.Y, position.Coords.Z)
+						//fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
+						//position := ReadPositionUpdate(fields)
+						//fmt.Println("GOT POSITION ", position.Coords.X, position.Coords.Y, position.Coords.Z)
 					}
 
 				case WORKER_OP_TYPE_LOG_MESSAGE:
@@ -171,11 +171,12 @@ func main() {
 
 
 func sendPositionUpdate(connection example.Worker_Connection, entity_id int64, x float64, y float64, z float64) {
+	fmt.Printf("Sending update %f %f %f\n", x, y, z)
+
 	componentUpdate := example.Schema_CreateComponentUpdate(54)
 	componentUpdateFields := example.Schema_GetComponentUpdateFields(componentUpdate)
 
-	WritePosition(componentUpdateFields, Position{Coordinates{x, y, z}})
-
+	WriteObject_Coordinates(componentUpdateFields, 1, Coordinates{x, y, z})
 
 
 	workerComponentUpdate := example.NewWorker_ComponentUpdate()

@@ -1,8 +1,6 @@
 package main
 
-import (
-	"github.com/rjfwhite/go-worker-api/example"
-)
+import "github.com/rjfwhite/go-worker-api/example"
 
 type Coordinates struct {
 	X float64
@@ -24,78 +22,52 @@ type CoordinatesUpdate struct {
 	Z *float64
 }
 
-func ReadPositionUpdate(input example.Schema_Object) PositionUpdate {
-	result := PositionUpdate{}
-	if example.Schema_GetObjectCount(input, 1) > 0 {
-		value := ReadCoordinates(example.Schema_GetObject(input, 1))
-		result.Coords = &value
+/////////////////
+
+func ReadObject_Coordinates(object example.Schema_Object, field uint, index uint) Coordinates {
+	innerObject := example.Schema_IndexObject(object, field, index)
+	return Coordinates {
+		X : ReadPrimitive_double(innerObject, 1, 0),
+		Y : ReadPrimitive_double(innerObject, 2, 0),
+		Z : ReadPrimitive_double(innerObject, 3, 0),
+	}
+}
+
+func WriteObject_Coordinates(object example.Schema_Object, field uint, value Coordinates) {
+	example.Schema_AddObject(object, field)
+	innerObject := example.Schema_GetObject(object, field)
+	WritePrimitive_double(innerObject, 1, value.X)
+	WritePrimitive_double(innerObject, 2, value.Y)
+	WritePrimitive_double(innerObject, 3, value.Z)
+}
+
+func ReadObject_Position(object example.Schema_Object, field uint, index uint) Position {
+	innerObject := example.Schema_IndexObject(object, field, index)
+	return Position {
+		Coords : ReadObject_Coordinates(innerObject, 1, 0),
+	}
+}
+
+func WriteObject_Position(object example.Schema_Object, field uint, value Position) {
+	example.Schema_AddObject(object, field)
+	innerObject := example.Schema_GetObject(object, field)
+	WriteObject_Coordinates(innerObject, 1, value.Coords)
+}
+
+func ReadList_Primitive_string(object example.Schema_Object, field uint, index uint) []string {
+	count := example.Schema_GetBytesCount(object, field)
+	result := []string{}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadPrimitive_string(object, field, i))
 	}
 	return result
 }
 
-func ReadCoordinatesUpdate(input example.Schema_Object) CoordinatesUpdate {
-	result := CoordinatesUpdate{}
-	if example.Schema_GetDoubleCount(input, 1) > 0 {
-		value := example.Schema_GetDouble(input, 1)
-		result.X = &value
-	}
-	if example.Schema_GetDoubleCount(input, 2) > 0 {
-		value := example.Schema_GetDouble(input, 2)
-		result.Y = &value
-	}
-	if example.Schema_GetDoubleCount(input, 3) > 0 {
-		value := example.Schema_GetDouble(input, 3)
-		result.Z = &value
+func ReadList_Object_Coordinates(object example.Schema_Object, field uint, index uint) []Coordinates {
+	count := example.Schema_GetObjectCount(object, field)
+	result := []Coordinates{}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadObject_Coordinates(object, field, i))
 	}
 	return result
-}
-
-func WritePositionUpdate(output example.Schema_Object, update PositionUpdate) {
-	if update.Coords != nil {
-		example.Schema_AddObject(output, 1)
-		WriteCoordinates(example.Schema_GetObject(output, 1), *update.Coords)
-	}
-}
-
-func WriteCoordinatesUpdate(output example.Schema_Object, update CoordinatesUpdate) {
-	if update.X != nil {
-		example.Schema_AddDouble(output, 1, *update.X)
-	}
-	if update.Y != nil {
-		example.Schema_AddDouble(output, 2, *update.Y)
-	}
-	if update.Z != nil {
-		example.Schema_AddDouble(output, 3, *update.Z)
-	}
-}
-
-func ApplyPositionUpdate(data Position, update PositionUpdate) {
-	if update.Coords != nil {
-		data.Coords = *update.Coords
-	}
-}
-
-func ReadCoordinates(input example.Schema_Object) Coordinates {
-	result := Coordinates{}
-	result.X = example.Schema_GetDouble(input, 1)
-	result.Y = example.Schema_GetDouble(input, 2)
-	result.Z = example.Schema_GetDouble(input, 3)
-	return result
-}
-
-func WriteCoordinates(output example.Schema_Object, value Coordinates) {
-	example.Schema_AddDouble(output, 1, value.X)
-	example.Schema_AddDouble(output, 2, value.Y)
-	example.Schema_AddDouble(output, 3, value.Z)
-}
-
-func ReadPosition(input example.Schema_Object) Position {
-	return Position{
-		Coords: ReadCoordinates(example.Schema_GetObject(input, 1)),
-	}
-}
-
-func WritePosition(output example.Schema_Object, value Position) {
-	example.Schema_AddObject(output, 1)
-	WriteCoordinates(example.Schema_GetObject(output, 1), value.Coords)
 }
