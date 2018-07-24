@@ -110,7 +110,7 @@ func GenerateWriteObjectType(t SchemaType) string {
 	output := ""
 	output += fmt.Sprintf("func WriteObject_%s(object example.Schema_Object, field uint, value %s) {\n", t.Name, t.Name)
 	output += "\texample.Schema_AddObject(object, field)\n"
-	output += fmt.Sprintf("\tinnerObject := example.Schema_GetObject(object, field)\n")
+	output += fmt.Sprintf("\tinnerObject := example.Schema_GetObject(object, field)\n") // will this hit a bug?
 	for _, f := range t.Fields {
 		output += fmt.Sprintf("\tWrite%s(innerObject, %d, value.%s)\n", MethodSuffixForType(f.Type), f.Id, f.Name)
 	}
@@ -344,6 +344,7 @@ func main() {
 	//	fmt.Println(GenerateReadPrimitiveType(PrimitiveType{Name:k}))
 	//	fmt.Println(GenerateWritePrimitiveType(PrimitiveType{Name:k}))
 	//}
+
 
 	fmt.Println(GenerateReadObjectType(coordinatesType))
 	fmt.Println(GenerateWriteObjectType(coordinatesType))
