@@ -5,21 +5,17 @@ import "github.com/rjfwhite/go-worker-api/example"
 type WorkerAttributeSet  struct {
 	attribute []string
 }
-
 type WorkerRequirementSet  struct {
 	attribute_set []WorkerAttributeSet
 }
-
 type Coordinates struct {
 	X float64
 	Y float64
 	Z float64
 }
-
 type Position struct {
 	Coords Coordinates
 }
-
 func ReadObject_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) WorkerAttributeSet  {
 	innerObject := example.Schema_IndexObject(object, field, index)
 	return WorkerAttributeSet  {
@@ -119,5 +115,49 @@ func WriteMap_Primitive_uint32_to_List_Object_WorkerAttributeSet(object example.
 		innerObject := example.Schema_AddObject(object, field)
 		WritePrimitive_uint32(innerObject, 1, k)
 		WriteList_Object_WorkerAttributeSet(innerObject, 2, v)
+	}
+}
+
+func ReadOption_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) *WorkerAttributeSet {
+	if example.Schema_GetObjectCount(object, field) > 0 {
+		result := ReadObject_WorkerAttributeSet(object, field, index)
+		return &result
+	}
+	return nil
+}
+
+func WriteOption_Object_WorkerAttributeSet(object example.Schema_Object, field uint, value *WorkerAttributeSet) {
+	if value != nil {
+		WriteObject_WorkerAttributeSet(object, field, *value)
+	}
+}
+
+type Color uint
+
+const (
+	Blue Color = 1
+	Red Color = 2
+)
+
+func ReadEnum_Color(object example.Schema_Object, field uint, index uint) Color {
+	return Color(example.Schema_IndexEnum(object, field, index))
+}
+
+func WriteEnum_Color(object example.Schema_Object, field uint, value Color) {
+	example.Schema_AddEnum(object, field, uint(value))
+}
+
+func ReadList_Enum_Color(object example.Schema_Object, field uint, index uint) []Color {
+	count := example.Schema_GetEnumCount(object, field)
+	result := []Color{}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadEnum_Color(object, field, i))
+	}
+	return result
+}
+
+func WriteList_Enum_Color(object example.Schema_Object, field uint, value []Color) {
+	for _, i := range(value) {
+		WriteEnum_Color(object, field, i)
 	}
 }
