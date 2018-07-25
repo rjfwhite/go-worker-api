@@ -21,8 +21,8 @@ func ReadPrimitive_string(object example.Schema_Object, field uint, index uint) 
 }
 
 func WritePrimitive_string(object example.Schema_Object, field uint, value string) {
-	v := byte(value[0])
-	example.Schema_AddBytes(object, field, &v, uint(len(value)))
+	bytes := []byte(value)
+	example.Schema_AddBytes(object, field, &(bytes[0]), uint(len(bytes)))
 }
 
 func ReadPrimitive_int32(object example.Schema_Object, field uint, index uint) int {

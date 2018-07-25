@@ -93,6 +93,22 @@ func GenerateReadListType(t ListType) string {
 	return output
 }
 
+/*
+Example generation for map type
+
+func ReadMap_Primitive_uint32_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) map[uint][]WorkerAttributeSet {
+	count := example.Schema_GetObjectCount(object, field)
+	result := map[uint][]WorkerAttributeSet{}
+	for i := uint(0); i < count; i++ {
+		innerObject := example.Schema_IndexObject(object, field, i)
+		key := ReadPrimitive_uint32(innerObject, 1, 0)
+		value := ReadList_Object_WorkerAttributeSet(innerObject, 2, 0)
+		result[key] = value
+	}
+	return result
+}
+ */
+
 func GenerateReadObjectType(t SchemaType) string {
 	output := ""
 	output += fmt.Sprintf("func ReadObject_%s(object example.Schema_Object, field uint, index uint) %s {\n", t.Name, t.Name)
@@ -176,6 +192,8 @@ func FunctionFamilyFor(t interface{}) string {
 		return "Object"
 	case ObjectType:
 		return "Object"
+	case MapType:
+		return "Object"
 	}
 	return ""
 }
@@ -188,6 +206,8 @@ func MethodSuffixForType(t interface{}) string {
 		return "Object_" + t.(ObjectType).Name
 	case ListType:
 		return "List_" + MethodSuffixForType(t.(ListType).Type)
+	case MapType:
+		return "Map_" + MethodSuffixForType(t.(MapType).KeyType) + "_to_" + MethodSuffixForType(t.(MapType).ValueType)
 	}
 	return ""
 }
@@ -210,10 +230,6 @@ var primitive_type_to_function_family = map[string]string{
 	"EntityId": "EntityId",
 	"bytes":    "Bytes",
 }
-
-
-
-
 
 func GenerateStruct(t SchemaType) string {
 	output := ""

@@ -2,10 +2,10 @@ package main
 
 import "github.com/rjfwhite/go-worker-api/example"
 
-type WorkerAttributeSet  struct {
+type WorkerAttributeSet struct {
 	attribute []string
 }
-type WorkerRequirementSet  struct {
+type WorkerRequirementSet struct {
 	attribute_set []WorkerAttributeSet
 }
 type Coordinates struct {
@@ -17,26 +17,26 @@ type Position struct {
 	Coords Coordinates
 }
 
-func ReadObject_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) WorkerAttributeSet  {
+func ReadObject_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) WorkerAttributeSet {
 	innerObject := example.Schema_IndexObject(object, field, index)
-	return WorkerAttributeSet  {
-		attribute : ReadList_Primitive_string(innerObject, 1, 0),
+	return WorkerAttributeSet{
+		attribute: ReadList_Primitive_string(innerObject, 1, 0),
 	}
 }
 
-func ReadObject_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) WorkerRequirementSet  {
+func ReadObject_WorkerRequirementSet(object example.Schema_Object, field uint, index uint) WorkerRequirementSet {
 	innerObject := example.Schema_IndexObject(object, field, index)
-	return WorkerRequirementSet  {
-		attribute_set : ReadList_Object_WorkerAttributeSet(innerObject, 1, 0),
+	return WorkerRequirementSet{
+		attribute_set: ReadList_Object_WorkerAttributeSet(innerObject, 1, 0),
 	}
 }
 
 func ReadObject_Coordinates(object example.Schema_Object, field uint, index uint) Coordinates {
 	innerObject := example.Schema_IndexObject(object, field, index)
-	return Coordinates {
-		X : ReadPrimitive_double(innerObject, 1, 0),
-		Y : ReadPrimitive_double(innerObject, 2, 0),
-		Z : ReadPrimitive_double(innerObject, 3, 0),
+	return Coordinates{
+		X: ReadPrimitive_double(innerObject, 1, 0),
+		Y: ReadPrimitive_double(innerObject, 2, 0),
+		Z: ReadPrimitive_double(innerObject, 3, 0),
 	}
 }
 
@@ -50,8 +50,8 @@ func WriteObject_Coordinates(object example.Schema_Object, field uint, value Coo
 
 func ReadObject_Position(object example.Schema_Object, field uint, index uint) Position {
 	innerObject := example.Schema_IndexObject(object, field, index)
-	return Position {
-		Coords : ReadObject_Coordinates(innerObject, 1, 0),
+	return Position{
+		Coords: ReadObject_Coordinates(innerObject, 1, 0),
 	}
 }
 
@@ -75,6 +75,19 @@ func ReadList_Object_WorkerAttributeSet(object example.Schema_Object, field uint
 	result := []WorkerAttributeSet{}
 	for i := uint(0); i < count; i++ {
 		result = append(result, ReadObject_WorkerAttributeSet(object, field, i))
+	}
+	return result
+}
+
+//Needs generating
+func ReadMap_Primitive_uint32_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) map[uint][]WorkerAttributeSet {
+	count := example.Schema_GetObjectCount(object, field)
+	result := map[uint][]WorkerAttributeSet{}
+	for i := uint(0); i < count; i++ {
+		innerObject := example.Schema_IndexObject(object, field, i)
+		key := ReadPrimitive_uint32(innerObject, 1, 0)
+		value := ReadList_Object_WorkerAttributeSet(innerObject, 2, 0)
+		result[key] = value
 	}
 	return result
 }
