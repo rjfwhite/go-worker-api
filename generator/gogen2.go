@@ -109,6 +109,22 @@ func ReadMap_Primitive_uint32_Object_WorkerAttributeSet(object example.Schema_Ob
 }
  */
 
+func GenerateReadMapType(t MapType) string {
+	output := ""
+	output += fmt.Sprintf("func Read%s(object example.Schema_Object, field uint, index uint) %s {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += "\tcount := example.Schema_GetObjectCount(object, field)\n"
+	output += fmt.Sprintf("\tresult := %s{}\n", GoTypeFor(t))
+	output += "\tfor i := uint(0); i < count; i++ {\n"
+	output += "\t\tinnerObject := example.Schema_IndexObject(object, field, i)\n"
+	output += fmt.Sprintf("\t\tkey := Read%s(innerObject, 1, 0)\n", MethodSuffixForType(t.KeyType))
+	output += fmt.Sprintf("\t\tvalue := Read%s(innerObject, 2, 0)\n", MethodSuffixForType(t.ValueType))
+	output += "\t\tresult[key] = value\n"
+	output += "\t}\n"
+	output += "\treturn result\n"
+	output += "}\n"
+	return output
+}
+
 func GenerateReadObjectType(t SchemaType) string {
 	output := ""
 	output += fmt.Sprintf("func ReadObject_%s(object example.Schema_Object, field uint, index uint) %s {\n", t.Name, t.Name)
@@ -161,6 +177,8 @@ func GoTypeFor(t interface{}) string {
 		return "[]" + GoTypeFor(t.(ListType).Type)
 	case ObjectType:
 		return t.(ObjectType).Name
+	case MapType:
+		return fmt.Sprintf("map[%s]%s", GoTypeFor(t.(MapType).KeyType), GoTypeFor(t.(MapType).ValueType))
 	}
 	return ""
 }
@@ -376,6 +394,7 @@ func main() {
 	fmt.Println(GenerateWriteObjectType(positionType))
 	fmt.Println(GenerateReadListType(ListType{Type:PrimitiveType{Name:"string"}}))
 	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
+	fmt.Println(GenerateReadMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerAttributeSet"}}}))
 
 
 	//fmt.Println("package main")

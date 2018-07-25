@@ -79,8 +79,7 @@ func ReadList_Object_WorkerAttributeSet(object example.Schema_Object, field uint
 	return result
 }
 
-//Needs generating
-func ReadMap_Primitive_uint32_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) map[uint][]WorkerAttributeSet {
+func ReadMap_Primitive_uint32_to_List_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) map[uint][]WorkerAttributeSet {
 	count := example.Schema_GetObjectCount(object, field)
 	result := map[uint][]WorkerAttributeSet{}
 	for i := uint(0); i < count; i++ {

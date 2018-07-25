@@ -103,7 +103,7 @@ func main() {
 						fmt.Println("GOT ACL")
 						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
 						read := ReadList_Object_WorkerAttributeSet(fields, 1, 0)
-						write := ReadMap_Primitive_uint32_Object_WorkerAttributeSet(fields, 2, 0)
+						write := ReadMap_Primitive_uint32_to_List_Object_WorkerAttributeSet(fields, 2, 0)
 						fmt.Printf("GOT ACL READ :%s - WRITE:%s", read, write)
 					}
 
