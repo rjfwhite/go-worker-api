@@ -220,7 +220,7 @@ func GenerateStruct(t SchemaType) string {
 	output += fmt.Sprintf("type %s struct {\n", t.Name)
 
 	for _, f := range t.Fields {
-		output += fmt.Sprintf("\t%s %s\n", f.Name, f.Type)
+		output += fmt.Sprintf("\t%s %s\n", f.Name, GoTypeFor(f.Type))
 	}
 
 	output += "}\n"
@@ -337,7 +337,6 @@ func main() {
 	coordinatesFields := []SchemaField{{Name: "X", Type: PrimitiveType{Name:"double"}, Id: 1}, {Name: "Y", Type: PrimitiveType{Name:"double"}, Id: 2}, {Name: "Z", Type: PrimitiveType{Name:"double"}, Id: 3}}
 	coordinatesType := SchemaType{Package: "", Name: "Coordinates", Fields: coordinatesFields}
 
-	listType := ListType{Type:PrimitiveType{Name:"string"}}
 
 	fmt.Println("package main")
 	//for k, _ := range(primitive_type_to_function_family) {
@@ -345,13 +344,22 @@ func main() {
 	//	fmt.Println(GenerateWritePrimitiveType(PrimitiveType{Name:k}))
 	//}
 
+	attributeSetType := SchemaType{Package:"", Name:"WorkerAttributeSet ", Fields:[]SchemaField{{Name: "attribute", Type: ListType{Type:PrimitiveType{"string"}}, Id: 1}}}
+	requirementSetType := SchemaType{Package:"", Name:"WorkerRequirementSet ", Fields:[]SchemaField{{Name: "attribute_set", Type: ListType{Type:ObjectType{"WorkerAttributeSet"}}, Id: 1}}}
 
+
+	fmt.Print(GenerateStruct(attributeSetType))
+	fmt.Print(GenerateStruct(requirementSetType))
+	fmt.Print(GenerateStruct(coordinatesType))
+	fmt.Print(GenerateStruct(positionType))
+	fmt.Println(GenerateReadObjectType(attributeSetType))
+	fmt.Println(GenerateReadObjectType(requirementSetType))
 	fmt.Println(GenerateReadObjectType(coordinatesType))
 	fmt.Println(GenerateWriteObjectType(coordinatesType))
 	fmt.Println(GenerateReadObjectType(positionType))
 	fmt.Println(GenerateWriteObjectType(positionType))
-	fmt.Println(GenerateReadListType(listType))
-	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"Coordinates"}}))
+	fmt.Println(GenerateReadListType(ListType{Type:PrimitiveType{Name:"string"}}))
+	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
 
 
 	//fmt.Println("package main")

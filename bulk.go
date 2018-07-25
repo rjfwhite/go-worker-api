@@ -1,6 +1,9 @@
 package main
 
-import "github.com/rjfwhite/go-worker-api/example"
+import (
+	"github.com/rjfwhite/go-worker-api/example"
+	"unsafe"
+)
 
 func ReadPrimitive_sint32(object example.Schema_Object, field uint, index uint) int {
 	return example.Schema_IndexSint32(object, field, index)
@@ -11,7 +14,10 @@ func WritePrimitive_sint32(object example.Schema_Object, field uint, value int) 
 }
 
 func ReadPrimitive_string(object example.Schema_Object, field uint, index uint) string {
-	return string(*example.Schema_IndexBytes(object, field, index))
+	length := example.Schema_IndexBytesLength(object, field, index)
+	unsafePtr := unsafe.Pointer(example.Schema_IndexBytes(object, field, index))
+	bytes := (*(*[2048]byte)(unsafePtr))[2:length]
+	return string(bytes)
 }
 
 func WritePrimitive_string(object example.Schema_Object, field uint, value string) {

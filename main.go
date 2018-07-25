@@ -99,6 +99,11 @@ func main() {
 						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
 						coords := ReadObject_Coordinates(fields, 1, 0)
 						fmt.Println("GOT POSITION ", coords.X, coords.Y, coords.Z)
+					} else if component_id == 50 {
+						fmt.Println("GOT ACL")
+						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
+						set := ReadList_Object_WorkerAttributeSet(fields, 1, 0)
+						fmt.Printf("GOT ACL %s", set)
 					}
 
 				case WORKER_OP_TYPE_LOG_MESSAGE:

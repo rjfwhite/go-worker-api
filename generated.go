@@ -2,27 +2,34 @@ package main
 
 import "github.com/rjfwhite/go-worker-api/example"
 
+type WorkerAttributeSet  struct {
+	attribute []string
+}
+type WorkerRequirementSet  struct {
+	attribute_set []WorkerAttributeSet
+}
 type Coordinates struct {
 	X float64
 	Y float64
 	Z float64
 }
-
 type Position struct {
 	Coords Coordinates
 }
 
-type PositionUpdate struct {
-	Coords *Coordinates
+func ReadObject_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) WorkerAttributeSet  {
+	innerObject := example.Schema_IndexObject(object, field, index)
+	return WorkerAttributeSet  {
+		attribute : ReadList_Primitive_string(innerObject, 1, 0),
+	}
 }
 
-type CoordinatesUpdate struct {
-	X *float64
-	Y *float64
-	Z *float64
+func ReadObject_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) WorkerRequirementSet  {
+	innerObject := example.Schema_IndexObject(object, field, index)
+	return WorkerRequirementSet  {
+		attribute_set : ReadList_Object_WorkerAttributeSet(innerObject, 1, 0),
+	}
 }
-
-/////////////////
 
 func ReadObject_Coordinates(object example.Schema_Object, field uint, index uint) Coordinates {
 	innerObject := example.Schema_IndexObject(object, field, index)
@@ -63,11 +70,11 @@ func ReadList_Primitive_string(object example.Schema_Object, field uint, index u
 	return result
 }
 
-func ReadList_Object_Coordinates(object example.Schema_Object, field uint, index uint) []Coordinates {
+func ReadList_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) []WorkerAttributeSet {
 	count := example.Schema_GetObjectCount(object, field)
-	result := []Coordinates{}
+	result := []WorkerAttributeSet{}
 	for i := uint(0); i < count; i++ {
-		result = append(result, ReadObject_Coordinates(object, field, i))
+		result = append(result, ReadObject_WorkerAttributeSet(object, field, i))
 	}
 	return result
 }
