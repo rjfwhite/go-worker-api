@@ -357,10 +357,6 @@ func main() {
 
 
 	fmt.Println("package main")
-	//for k, _ := range(primitive_type_to_function_family) {
-	//	fmt.Println(GenerateReadPrimitiveType(PrimitiveType{Name:k}))
-	//	fmt.Println(GenerateWritePrimitiveType(PrimitiveType{Name:k}))
-	//}
 
 	attributeSetType := SchemaType{Package:"", Name:"WorkerAttributeSet ", Fields:[]SchemaField{{Name: "attribute", Type: ListType{Type:PrimitiveType{"string"}}, Id: 1}}}
 	requirementSetType := SchemaType{Package:"", Name:"WorkerRequirementSet ", Fields:[]SchemaField{{Name: "attribute_set", Type: ListType{Type:ObjectType{"WorkerAttributeSet"}}, Id: 1}}}
