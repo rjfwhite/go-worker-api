@@ -44,41 +44,35 @@ type MapType struct {
 func GenerateReadType(t interface{}) string {
 	switch t.(type) {
 	case PrimitiveType:
-		GenerateReadPrimitiveType(t.(PrimitiveType))
+		// no-op, should already be generated
 	}
 	return ""
 }
 
-func GenerateReadPrimitiveType(t PrimitiveType) string {
-	go_type := GoTypeFor(t.Name)
-	function_family := primitive_type_to_function_family[t.Name]
-	output := ""
-
-	output += fmt.Sprintf("func ReadPrimitive_%s(object example.Schema_Object, field uint, index uint) %s {\n", t.Name, go_type)
-
-	boolFix := ""
-	if t.Name == "bool" {
-		boolFix = " > 0"
-	}
-
-	output += fmt.Sprintf("\treturn example.Schema_Get%s(object, index)%s\n", function_family, boolFix)
-	output += "}\n"
-
-	return output
-}
-
-func GenerateWritePrimitiveType(t PrimitiveType) string {
-	go_type := GoTypeFor(t)
-	function_family := primitive_type_to_function_family[t.Name]
-	output := ""
-
-	output += fmt.Sprintf("func WritePrimitive_%s(object example.Schema_Object, field uint, value %s) {\n", t.Name, go_type)
-
-	output += fmt.Sprintf("\texample.Schema_Add%s(object, index, value)\n", function_family)
-	output += "}\n"
-
-	return output
-}
+// Hand-written from now on
+//func GenerateReadPrimitiveType(t PrimitiveType) string {
+//	go_type := GoTypeFor(t.Name)
+//	function_family := FunctionFamilyFor(t)
+//	output := ""
+//	output += fmt.Sprintf("func ReadPrimitive_%s(object example.Schema_Object, field uint, index uint) %s {\n", t.Name, go_type)
+//	boolFix := ""
+//	if t.Name == "bool" {
+//		boolFix = " > 0"
+//	}
+//	output += fmt.Sprintf("\treturn example.Schema_Index%s(object, field, index)%s\n", function_family, boolFix)
+//	output += "}\n"
+//	return output
+//}
+//
+//func GenerateWritePrimitiveType(t PrimitiveType) string {
+//	go_type := GoTypeFor(t)
+//	function_family := FunctionFamilyFor(t)
+//	output := ""
+//	output += fmt.Sprintf("func WritePrimitive_%s(object example.Schema_Object, field uint, value %s) {\n", t.Name, go_type)
+//	output += fmt.Sprintf("\texample.Schema_Add%s(object, index, value)\n", function_family)
+//	output += "}\n"
+//	return output
+//}
 
 func GenerateReadListType(t ListType) string {
 	output := ""
@@ -93,21 +87,15 @@ func GenerateReadListType(t ListType) string {
 	return output
 }
 
-/*
-Example generation for map type
-
-func ReadMap_Primitive_uint32_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) map[uint][]WorkerAttributeSet {
-	count := example.Schema_GetObjectCount(object, field)
-	result := map[uint][]WorkerAttributeSet{}
-	for i := uint(0); i < count; i++ {
-		innerObject := example.Schema_IndexObject(object, field, i)
-		key := ReadPrimitive_uint32(innerObject, 1, 0)
-		value := ReadList_Object_WorkerAttributeSet(innerObject, 2, 0)
-		result[key] = value
-	}
-	return result
+func GenerateWriteListType(t ListType) string {
+	output := ""
+	output += fmt.Sprintf("func Write%s(object example.Schema_Object, field uint, value %s) {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += "\tfor _, i := range(value) {\n"
+	output += fmt.Sprintf("\t\tWrite%s(object, field, i)\n", MethodSuffixForType(t.Type))
+	output += "\t}\n"
+	output += "}\n"
+	return output
 }
- */
 
 func GenerateReadMapType(t MapType) string {
 	output := ""
@@ -121,6 +109,18 @@ func GenerateReadMapType(t MapType) string {
 	output += "\t\tresult[key] = value\n"
 	output += "\t}\n"
 	output += "\treturn result\n"
+	output += "}\n"
+	return output
+}
+
+func GenerateWriteMapType(t MapType) string {
+	output := ""
+	output += fmt.Sprintf("func Write%s(object example.Schema_Object, field uint, index uint, value %s) {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += "\tfor k, v := range(value) {\n"
+	output += "\t\tinnerObject := example.Schema_AddObject(object, field)\n"
+	output += fmt.Sprintf("\t\tWrite%s(innerObject, 1, k)\n", MethodSuffixForType(t.KeyType))
+	output += fmt.Sprintf("\t\tWrite%s(innerObject, 2, v)\n", MethodSuffixForType(t.ValueType))
+	output += "\t}\n"
 	output += "}\n"
 	return output
 }
@@ -141,8 +141,7 @@ func GenerateReadObjectType(t SchemaType) string {
 func GenerateWriteObjectType(t SchemaType) string {
 	output := ""
 	output += fmt.Sprintf("func WriteObject_%s(object example.Schema_Object, field uint, value %s) {\n", t.Name, t.Name)
-	output += "\texample.Schema_AddObject(object, field)\n"
-	output += fmt.Sprintf("\tinnerObject := example.Schema_GetObject(object, field)\n") // will this hit a bug?
+	output += "\tinnerObject := example.Schema_AddObject(object, field)\n"
 	for _, f := range t.Fields {
 		output += fmt.Sprintf("\tWrite%s(innerObject, %d, value.%s)\n", MethodSuffixForType(f.Type), f.Id, f.Name)
 	}
@@ -179,6 +178,8 @@ func GoTypeFor(t interface{}) string {
 		return t.(ObjectType).Name
 	case MapType:
 		return fmt.Sprintf("map[%s]%s", GoTypeFor(t.(MapType).KeyType), GoTypeFor(t.(MapType).ValueType))
+	case OptionType:
+		return "*" + GoTypeFor(t.(OptionType).Type)
 	}
 	return ""
 }
@@ -212,6 +213,8 @@ func FunctionFamilyFor(t interface{}) string {
 		return "Object"
 	case MapType:
 		return "Object"
+	case OptionType:
+		return FunctionFamilyFor(t.(OptionType).Type)
 	}
 	return ""
 }
@@ -228,25 +231,6 @@ func MethodSuffixForType(t interface{}) string {
 		return "Map_" + MethodSuffixForType(t.(MapType).KeyType) + "_to_" + MethodSuffixForType(t.(MapType).ValueType)
 	}
 	return ""
-}
-
-var primitive_type_to_function_family = map[string]string{
-	"int32":    "Int32",
-	"int64":    "Int64",
-	"uint32":   "Uint32",
-	"uint64":   "Uint64",
-	"sint32":   "Sint32",
-	"sint64":   "Sint64",
-	"fixed32":  "Fixed32",
-	"fixed64":  "Fixed64",
-	"sfixed32": "Sfixed32",
-	"sfixed64": "Sfixed64",
-	"bool":     "Bool",
-	"float":    "Float",
-	"double":   "Double",
-	"string":   "Bytes",
-	"EntityId": "EntityId",
-	"bytes":    "Bytes",
 }
 
 func GenerateStruct(t SchemaType) string {
@@ -387,14 +371,19 @@ func main() {
 	fmt.Print(GenerateStruct(coordinatesType))
 	fmt.Print(GenerateStruct(positionType))
 	fmt.Println(GenerateReadObjectType(attributeSetType))
+	fmt.Println(GenerateWriteObjectType(attributeSetType))
 	fmt.Println(GenerateReadObjectType(requirementSetType))
+	fmt.Println(GenerateWriteObjectType(requirementSetType))
 	fmt.Println(GenerateReadObjectType(coordinatesType))
 	fmt.Println(GenerateWriteObjectType(coordinatesType))
 	fmt.Println(GenerateReadObjectType(positionType))
 	fmt.Println(GenerateWriteObjectType(positionType))
 	fmt.Println(GenerateReadListType(ListType{Type:PrimitiveType{Name:"string"}}))
+	fmt.Println(GenerateWriteListType(ListType{Type:PrimitiveType{Name:"string"}}))
 	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
+	fmt.Println(GenerateWriteListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
 	fmt.Println(GenerateReadMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerAttributeSet"}}}))
+	fmt.Println(GenerateWriteMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerAttributeSet"}}}))
 
 
 	//fmt.Println("package main")
