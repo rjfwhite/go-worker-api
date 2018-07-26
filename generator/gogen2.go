@@ -10,6 +10,13 @@ type SchemaType struct {
 	Fields  []SchemaField
 }
 
+type ComponentType struct {
+	Package string
+	Name    string
+	Data SchemaType
+	Events []SchemaField
+}
+
 type SchemaField struct {
 	Name string
 	Type interface{}
@@ -21,6 +28,7 @@ type PrimitiveType struct {
 }
 
 type EnumType struct {
+	Package string
 	Name string
 	values map[int]string
 }
@@ -41,7 +49,6 @@ type MapType struct {
 	KeyType interface{}
 	ValueType interface{}
 }
-
 
 func GoTypeFor(t interface{}) string {
 	var primitive_type_to_go_type = map[string]string{
@@ -134,7 +141,6 @@ func MethodSuffixForType(t interface{}) string {
 	}
 	return ""
 }
-
 
 func GenerateUpdateStruct(t SchemaType) string {
 	output := ""
@@ -243,6 +249,7 @@ func GenerateWriter(t SchemaType) string {
 func main() {
 	positionFields := []SchemaField{{Name: "Coords", Type: ObjectType{Name:"Coordinates"}, Id: 1}}
 	positionType := SchemaType{Package: "", Name: "Position", Fields: positionFields}
+	positionComponenType := ComponentType{Package: "", Name: "Position", Data:positionType}
 	coordinatesFields := []SchemaField{{Name: "X", Type: PrimitiveType{Name:"double"}, Id: 1}, {Name: "Y", Type: PrimitiveType{Name:"double"}, Id: 2}, {Name: "Z", Type: PrimitiveType{Name:"double"}, Id: 3}}
 	coordinatesType := SchemaType{Package: "", Name: "Coordinates", Fields: coordinatesFields}
 
@@ -280,5 +287,9 @@ func main() {
 	fmt.Println(GenerateWriteEnumType(testEnum))
 	fmt.Println(GenerateReadListType(ListType{Type:testEnum}))
 	fmt.Println(GenerateWriteListType(ListType{Type:testEnum}))
+	fmt.Println(GenerateComponentType(positionComponenType))
+	fmt.Println(GenerateComponentUpdateType(positionComponenType))
+	fmt.Println(GenerateReadComponentType(positionComponenType))
+	fmt.Println(GenerateWriteComponentType(positionComponenType))
 
 }
