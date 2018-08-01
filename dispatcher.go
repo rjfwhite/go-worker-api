@@ -5,6 +5,7 @@ import (
 )
 
 type EntityAddedCallback func(entity_id int64)
+type EntityRemovedCallback func(entity_id int64)
 
 type ComponentAddedCallback func(entity_id int64, component_data example.Worker_ComponentData)
 type ComponentUpdatedCallback func(entity_id int64, component_update example.Worker_ComponentUpdate)
@@ -35,31 +36,36 @@ const (
 )
 
 type Dispatcher struct {
-	EntityAddedCallbacks []EntityAddedCallback
+	EntityAddedCallbacks   []EntityAddedCallback
+	EntityRemovedCallbacks []EntityRemovedCallback
 
-	ComponentAddedCallbacks   map[int][]ComponentAddedCallback
-	ComponentUpdatedCallbacks map[int][]ComponentUpdatedCallback
-	ComponentRemovedCallbacks map[int][]ComponentRemovedCallback
+	ComponentAddedCallbacks     map[int][]ComponentAddedCallback
+	ComponentUpdatedCallbacks   map[int][]ComponentUpdatedCallback
+	ComponentRemovedCallbacks   map[int][]ComponentRemovedCallback
 	ComponentAuthorityCallbacks map[int][]ComponentAuthorityCallback
 }
 
 func (dispatcher Dispatcher) dispatch(op example.Worker_Op) {
 	opType := WORKER_OP_TYPE(op.GetOp_type())
 	switch opType {
-	case WORKER_OP_TYPE_METRICS:
-
 	case WORKER_OP_TYPE_ADD_ENTITY:
-		addEntity := op.GetAdd_entity()
-		for _, callback := range (dispatcher.EntityAddedCallbacks) {
-			callback(addEntity.GetEntity_id())
+		specificOp := op.GetAdd_entity()
+		for _, callback := range dispatcher.EntityAddedCallbacks {
+			callback(specificOp.GetEntity_id())
+		}
+
+	case WORKER_OP_TYPE_REMOVE_ENTITY:
+		specificOp := op.GetRemove_entity()
+		for _, callback := range dispatcher.EntityRemovedCallbacks {
+			callback(specificOp.GetEntity_id())
 		}
 
 	case WORKER_OP_TYPE_ADD_COMPONENT:
 
-	case WORKER_OP_TYPE_LOG_MESSAGE:
-
 	case WORKER_OP_TYPE_AUTHORITY_CHANGE:
 
+	case WORKER_OP_TYPE_METRICS:
+	case WORKER_OP_TYPE_LOG_MESSAGE:
 	default:
 	}
 }
