@@ -161,3 +161,25 @@ func WriteList_Enum_Color(object example.Schema_Object, field uint, value []Colo
 		WriteEnum_Color(object, field, i)
 	}
 }
+
+type Position struct {
+	Coords Coordinates
+}
+
+type PositionUpdate struct {
+	Coords *Coordinates
+}
+
+func ReadComponent_Position(object example.Schema_Object) Position {
+	return Position {
+		Coords : ReadObject_Coordinates(object, 1, 0),
+	}
+}
+
+func WriteComponent_Position(object example.Schema_Object, value Position) {
+	WriteObject_Coordinates(object, 1, value.Coords)
+}
+
+type PositionAddedCallback func(entity_id int64, data Position)
+type PositionUpdatedCallback func(entity_id int64, update PositionUpdate)
+type PositionRemovedCallback func(entity_id int64)

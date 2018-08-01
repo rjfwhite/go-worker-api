@@ -291,5 +291,6 @@ func main() {
 	fmt.Println(GenerateComponentUpdateType(positionComponenType))
 	fmt.Println(GenerateReadComponentType(positionComponenType))
 	fmt.Println(GenerateWriteComponentType(positionComponenType))
+	fmt.Println(GenerateComponentEventCallbacks(positionComponenType))
 
 }
