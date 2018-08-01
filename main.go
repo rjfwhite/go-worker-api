@@ -8,28 +8,6 @@ import (
 	"math"
 )
 
-type WORKER_OP_TYPE int
-
-const (
-	WORKER_OP_TYPE_DISCONNECT                  WORKER_OP_TYPE = 1
-	WORKER_OP_TYPE_FLAG_UPDATE                 WORKER_OP_TYPE = 2
-	WORKER_OP_TYPE_LOG_MESSAGE                 WORKER_OP_TYPE = 3
-	WORKER_OP_TYPE_METRICS                     WORKER_OP_TYPE = 4
-	WORKER_OP_TYPE_CRITICAL_SECTION            WORKER_OP_TYPE = 5
-	WORKER_OP_TYPE_ADD_ENTITY                  WORKER_OP_TYPE = 6
-	WORKER_OP_TYPE_REMOVE_ENTITY               WORKER_OP_TYPE = 7
-	WORKER_OP_TYPE_RESERVE_ENTITY_ID_RESPONSE  WORKER_OP_TYPE = 8
-	WORKER_OP_TYPE_RESERVE_ENTITY_IDS_RESPONSE WORKER_OP_TYPE = 9
-	WORKER_OP_TYPE_CREATE_ENTITY_RESPONSE      WORKER_OP_TYPE = 10
-	WORKER_OP_TYPE_DELETE_ENTITY_RESPONSE      WORKER_OP_TYPE = 11
-	WORKER_OP_TYPE_ENTITY_QUERY_RESPONSE       WORKER_OP_TYPE = 12
-	WORKER_OP_TYPE_ADD_COMPONENT               WORKER_OP_TYPE = 13
-	WORKER_OP_TYPE_REMOVE_COMPONENT            WORKER_OP_TYPE = 14
-	WORKER_OP_TYPE_AUTHORITY_CHANGE            WORKER_OP_TYPE = 15
-	WORKER_OP_TYPE_COMPONENT_UPDATE            WORKER_OP_TYPE = 16
-	WORKER_OP_TYPE_COMMAND_REQUEST             WORKER_OP_TYPE = 17
-	WORKER_OP_TYPE_COMMAND_RESPONSE            WORKER_OP_TYPE = 18
-)
 
 type EntityComponent struct {
 	entity_id int64
@@ -97,13 +75,15 @@ func main() {
 					fmt.Printf("GOT ADD COMPONENT %d for ENTITY %d\n", component_id, entity_id)
 					if component_id == 54 {
 						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
-						coords := ReadObject_Coordinates(fields, 1, 0)
-						fmt.Println("GOT POSITION ", coords.X, coords.Y, coords.Z)
+						position := ReadComponent_Position(fields)
+						fmt.Println("GOT POSITION ", position.Coords.X, position.Coords.Y, position.Coords.Z)
 					} else if component_id == 50 {
 						fmt.Println("GOT ACL")
 						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
 						read := ReadList_Object_WorkerAttributeSet(fields, 1, 0)
 						write := ReadMap_Primitive_uint32_to_List_Object_WorkerAttributeSet(fields, 2, 0)
+
+
 						fmt.Printf("GOT ACL READ :%s - WRITE:%s", read, write)
 					}
 
@@ -182,8 +162,9 @@ func sendPositionUpdate(connection example.Worker_Connection, entity_id int64, x
 	componentUpdate := example.Schema_CreateComponentUpdate(54)
 	componentUpdateFields := example.Schema_GetComponentUpdateFields(componentUpdate)
 
-	WriteObject_Coordinates(componentUpdateFields, 1, Coordinates{x, y, z})
+	newCoordinates := Coordinates{x, y, z}
 
+	WriteComponentUpdate_Position(componentUpdateFields, PositionUpdate{&newCoordinates})
 
 	workerComponentUpdate := example.NewWorker_ComponentUpdate()
 	workerComponentUpdate.SetComponent_id(54)

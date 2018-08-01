@@ -2,10 +2,6 @@ package main
 
 import "fmt"
 
-type PositionAddCallback func (entity_id int64, position string)
-type PositionUpdateCallback func (entity_id int64, position string)
-type PositionRemovedCallback func (entity_id int64)
-
 func GenerateComponentEventCallbacks(t ComponentType) string {
 	output := ""
 	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Name, GoTypeFor(ObjectType{t.Name}))
@@ -19,16 +15,6 @@ func GenerateComponentType(t ComponentType) string {
 	output += fmt.Sprintf("type %s struct {\n", t.Name)
 	for _, f := range t.Data.Fields {
 		output += fmt.Sprintf("\t%s %s\n", f.Name, GoTypeFor(f.Type))
-	}
-	output += "}\n"
-	return output
-}
-
-func GenerateComponentUpdateType(t ComponentType) string {
-	output := ""
-	output += fmt.Sprintf("type %sUpdate struct {\n", t.Name)
-	for _, f := range t.Data.Fields {
-		output += fmt.Sprintf("\t%s %s\n", f.Name, GoTypeFor(OptionType{f.Type}))
 	}
 	output += "}\n"
 	return output

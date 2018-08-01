@@ -265,7 +265,6 @@ func main() {
 	fmt.Print(GenerateObjectType(attributeSetType))
 	fmt.Print(GenerateObjectType(requirementSetType))
 	fmt.Print(GenerateObjectType(coordinatesType))
-	fmt.Print(GenerateObjectType(positionType))
 	fmt.Println(GenerateReadObjectType(attributeSetType))
 	fmt.Println(GenerateWriteObjectType(attributeSetType))
 	fmt.Println(GenerateReadObjectType(requirementSetType))
@@ -291,6 +290,10 @@ func main() {
 	fmt.Println(GenerateComponentUpdateType(positionComponenType))
 	fmt.Println(GenerateReadComponentType(positionComponenType))
 	fmt.Println(GenerateWriteComponentType(positionComponenType))
+	fmt.Println(GenerateReadComponentUpdateType(positionComponenType))
+	fmt.Println(GenerateWriteComponentUpdateType(positionComponenType))
 	fmt.Println(GenerateComponentEventCallbacks(positionComponenType))
+	fmt.Println(GenerateReadOptionType(OptionType{Type:ObjectType{"Coordinates"}}))
+	fmt.Println(GenerateWriteOptionType(OptionType{Type:ObjectType{"Coordinates"}}))
 
 }

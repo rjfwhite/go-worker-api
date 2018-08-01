@@ -13,9 +13,6 @@ type Coordinates struct {
 	Y float64
 	Z float64
 }
-type Position struct {
-	Coords Coordinates
-}
 func ReadObject_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) WorkerAttributeSet  {
 	innerObject := example.Schema_IndexObject(object, field, index)
 	return WorkerAttributeSet  {
@@ -135,8 +132,8 @@ func WriteOption_Object_WorkerAttributeSet(object example.Schema_Object, field u
 type Color uint
 
 const (
-	Blue Color = 1
 	Red Color = 2
+	Blue Color = 1
 )
 
 func ReadEnum_Color(object example.Schema_Object, field uint, index uint) Color {
@@ -180,6 +177,30 @@ func WriteComponent_Position(object example.Schema_Object, value Position) {
 	WriteObject_Coordinates(object, 1, value.Coords)
 }
 
+func ReadComponentUpdate_Position(object example.Schema_Object) PositionUpdate {
+	return PositionUpdate {
+		Coords : ReadOption_Object_Coordinates(object, 1, 0),
+	}
+}
+
+func WriteComponentUpdate_Position(object example.Schema_Object, value PositionUpdate) {
+	WriteOption_Object_Coordinates(object, 1, value.Coords)
+}
+
 type PositionAddedCallback func(entity_id int64, data Position)
 type PositionUpdatedCallback func(entity_id int64, update PositionUpdate)
 type PositionRemovedCallback func(entity_id int64)
+
+func ReadOption_Object_Coordinates(object example.Schema_Object, field uint, index uint) *Coordinates {
+	if example.Schema_GetObjectCount(object, field) > 0 {
+		result := ReadObject_Coordinates(object, field, index)
+		return &result
+	}
+	return nil
+}
+
+func WriteOption_Object_Coordinates(object example.Schema_Object, field uint, value *Coordinates) {
+	if value != nil {
+		WriteObject_Coordinates(object, field, *value)
+	}
+}
