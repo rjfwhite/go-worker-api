@@ -2,14 +2,6 @@ package main
 
 import "fmt"
 
-func GenerateComponentEventCallbacks(t ComponentType) string {
-	output := ""
-	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Name, GoTypeFor(ObjectType{t.Name}))
-	output += fmt.Sprintf("type %sUpdatedCallback func(entity_id int64, update %s)\n", t.Name, GoTypeFor(ObjectType{t.Name}) + "Update")
-	output += fmt.Sprintf("type %sRemovedCallback func(entity_id int64)\n", t.Name)
-	return output
-}
-
 func GenerateComponentType(t ComponentType) string {
 	output := ""
 	output += fmt.Sprintf("type %s struct {\n", t.Name)

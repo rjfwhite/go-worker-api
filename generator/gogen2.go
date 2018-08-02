@@ -309,15 +309,21 @@ func main() {
 	fmt.Println(GenerateWriteComponentUpdateType(positionComponenType))
 	fmt.Println(GenerateComponentEventCallbacks(positionComponenType))
 	fmt.Println(GenerateAddComponentDispatcherMethod(positionComponenType))
+	fmt.Println(GenerateUpdateComponentDispatcherMethod(positionComponenType))
+	fmt.Println(GenerateAuthorityComponentDispatcherMethod(positionComponenType))
+	fmt.Println(GenerateRemoveComponentDispatcherMethod(positionComponenType))
 
 	fmt.Println(GenerateComponentType(aclComponentType))
 	fmt.Println(GenerateComponentUpdateType(aclComponentType))
 	fmt.Println(GenerateReadComponentType(aclComponentType))
-	//fmt.Println(GenerateWriteComponentType(aclComponentType))
+	fmt.Println(GenerateWriteComponentType(aclComponentType))
 	fmt.Println(GenerateReadComponentUpdateType(aclComponentType))
-	//fmt.Println(GenerateWriteComponentUpdateType(aclComponentType))
+	fmt.Println(GenerateWriteComponentUpdateType(aclComponentType))
 	fmt.Println(GenerateComponentEventCallbacks(aclComponentType))
 	fmt.Println(GenerateAddComponentDispatcherMethod(aclComponentType))
+	fmt.Println(GenerateUpdateComponentDispatcherMethod(aclComponentType))
+	fmt.Println(GenerateAuthorityComponentDispatcherMethod(aclComponentType))
+	fmt.Println(GenerateRemoveComponentDispatcherMethod(aclComponentType))
 
 
 	fmt.Println(GenerateReadOptionType(OptionType{Type:ObjectType{"Coordinates"}}))

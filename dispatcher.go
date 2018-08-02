@@ -85,8 +85,25 @@ func (dispatcher* Dispatcher) OnComponentAuthority(component_id uint, callback C
 	dispatcher.ComponentAuthorityCallbacks[component_id] = append(dispatcher.ComponentAuthorityCallbacks[component_id], callback)
 }
 
+func (dispatcher * Dispatcher) Init() {
+	dispatcher.EntityAddedCallbacks = []EntityAddedCallback{}
+	dispatcher.EntityRemovedCallbacks = []EntityRemovedCallback{}
 
-func (dispatcher Dispatcher) dispatch(op example.Worker_Op) {
+	dispatcher.ComponentAddedCallbacks = map[uint][]ComponentAddedCallback{}
+	dispatcher.ComponentUpdatedCallbacks = map[uint][]ComponentUpdatedCallback{}
+	dispatcher.ComponentRemovedCallbacks = map[uint][]ComponentRemovedCallback{}
+	dispatcher.ComponentAuthorityCallbacks = map[uint][]ComponentAuthorityCallback{}
+}
+
+func (dispatcher Dispatcher) dispatchOps(ops example.Worker_OpList) {
+	count := ops.GetOp_count()
+	for i := uint(0); i < count; i++ {
+		dispatcher.dispatchOp(example.Worker_OpList_GetSpecificOp(ops, i))
+	}
+}
+
+
+func (dispatcher Dispatcher) dispatchOp(op example.Worker_Op) {
 	opType := WORKER_OP_TYPE(op.GetOp_type())
 	switch opType {
 	case WORKER_OP_TYPE_ADD_ENTITY:
@@ -127,6 +144,12 @@ func (dispatcher Dispatcher) dispatch(op example.Worker_Op) {
 		}
 
 	case WORKER_OP_TYPE_AUTHORITY_CHANGE:
+		specificOp := op.GetAuthority_change()
+		entity_id := specificOp.GetEntity_id()
+		is_authoritative := specificOp.GetAuthority() > 0
+		for _, callback := range dispatcher.ComponentAuthorityCallbacks[specificOp.GetComponent_id()] {
+			callback(entity_id, is_authoritative)
+		}
 
 	case WORKER_OP_TYPE_METRICS:
 	case WORKER_OP_TYPE_LOG_MESSAGE:
