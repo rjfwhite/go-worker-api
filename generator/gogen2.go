@@ -15,6 +15,7 @@ type ComponentType struct {
 	Name    string
 	Data SchemaType
 	Events []SchemaField
+	Id uint
 }
 
 type SchemaField struct {
@@ -249,9 +250,15 @@ func GenerateWriter(t SchemaType) string {
 func main() {
 	positionFields := []SchemaField{{Name: "Coords", Type: ObjectType{Name:"Coordinates"}, Id: 1}}
 	positionType := SchemaType{Package: "", Name: "Position", Fields: positionFields}
-	positionComponenType := ComponentType{Package: "", Name: "Position", Data:positionType}
+	positionComponenType := ComponentType{Package: "", Name: "Position", Data:positionType, Id:54}
 	coordinatesFields := []SchemaField{{Name: "X", Type: PrimitiveType{Name:"double"}, Id: 1}, {Name: "Y", Type: PrimitiveType{Name:"double"}, Id: 2}, {Name: "Z", Type: PrimitiveType{Name:"double"}, Id: 3}}
 	coordinatesType := SchemaType{Package: "", Name: "Coordinates", Fields: coordinatesFields}
+
+	attributeSetType := SchemaType{Package:"", Name:"WorkerAttributeSet ", Fields:[]SchemaField{{Name: "attribute", Type: ListType{Type:PrimitiveType{"string"}}, Id: 1}}}
+	requirementSetType := SchemaType{Package:"", Name:"WorkerRequirementSet ", Fields:[]SchemaField{{Name: "attribute_set", Type: ListType{Type:ObjectType{"WorkerAttributeSet"}}, Id: 1}}}
+	aclFields := []SchemaField{{Name:"Read", Type:ListType{Type:ObjectType{"WorkerRequirementSet"}},Id:1},
+	{Name:"Write", Type:MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerRequirementSet"}}}, Id:2}}
+	aclComponentType := ComponentType{Package:"", Name:"EntityAcl", Data:SchemaType{Package:"", Name:"EntityAcl", Fields:aclFields}, Id:50}
 
 
 
@@ -259,8 +266,6 @@ func main() {
 
 	fmt.Println("package main")
 
-	attributeSetType := SchemaType{Package:"", Name:"WorkerAttributeSet ", Fields:[]SchemaField{{Name: "attribute", Type: ListType{Type:PrimitiveType{"string"}}, Id: 1}}}
-	requirementSetType := SchemaType{Package:"", Name:"WorkerRequirementSet ", Fields:[]SchemaField{{Name: "attribute_set", Type: ListType{Type:ObjectType{"WorkerAttributeSet"}}, Id: 1}}}
 
 	fmt.Print(GenerateObjectType(attributeSetType))
 	fmt.Print(GenerateObjectType(requirementSetType))
@@ -275,17 +280,18 @@ func main() {
 	fmt.Println(GenerateWriteObjectType(positionType))
 	fmt.Println(GenerateReadListType(ListType{Type:PrimitiveType{Name:"string"}}))
 	fmt.Println(GenerateWriteListType(ListType{Type:PrimitiveType{Name:"string"}}))
+	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerRequirementSet"}}))
+	fmt.Println(GenerateWriteListType(ListType{Type:ObjectType{"WorkerRequirementSet"}}))
 	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
 	fmt.Println(GenerateWriteListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
-	fmt.Println(GenerateReadMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerAttributeSet"}}}))
-	fmt.Println(GenerateWriteMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerAttributeSet"}}}))
-	fmt.Println(GenerateReadOptionType(OptionType{Type:ObjectType{"WorkerAttributeSet"}}))
-	fmt.Println(GenerateWriteOptionType(OptionType{Type:ObjectType{"WorkerAttributeSet"}}))
+	fmt.Println(GenerateReadMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerRequirementSet"}}}))
+	fmt.Println(GenerateWriteMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerRequirementSet"}}}))
 	fmt.Println(GenerateEnumType(testEnum))
 	fmt.Println(GenerateReadEnumType(testEnum))
 	fmt.Println(GenerateWriteEnumType(testEnum))
 	fmt.Println(GenerateReadListType(ListType{Type:testEnum}))
 	fmt.Println(GenerateWriteListType(ListType{Type:testEnum}))
+
 	fmt.Println(GenerateComponentType(positionComponenType))
 	fmt.Println(GenerateComponentUpdateType(positionComponenType))
 	fmt.Println(GenerateReadComponentType(positionComponenType))
@@ -293,6 +299,18 @@ func main() {
 	fmt.Println(GenerateReadComponentUpdateType(positionComponenType))
 	fmt.Println(GenerateWriteComponentUpdateType(positionComponenType))
 	fmt.Println(GenerateComponentEventCallbacks(positionComponenType))
+	fmt.Println(GenerateAddComponentDispatcherMethod(positionComponenType))
+
+	fmt.Println(GenerateComponentType(aclComponentType))
+	fmt.Println(GenerateComponentUpdateType(aclComponentType))
+	fmt.Println(GenerateReadComponentType(aclComponentType))
+	//fmt.Println(GenerateWriteComponentType(aclComponentType))
+	fmt.Println(GenerateReadComponentUpdateType(aclComponentType))
+	//fmt.Println(GenerateWriteComponentUpdateType(aclComponentType))
+	fmt.Println(GenerateComponentEventCallbacks(aclComponentType))
+	fmt.Println(GenerateAddComponentDispatcherMethod(aclComponentType))
+
+
 	fmt.Println(GenerateReadOptionType(OptionType{Type:ObjectType{"Coordinates"}}))
 	fmt.Println(GenerateWriteOptionType(OptionType{Type:ObjectType{"Coordinates"}}))
 

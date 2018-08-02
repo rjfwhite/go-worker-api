@@ -39,10 +39,10 @@ type Dispatcher struct {
 	EntityAddedCallbacks   []EntityAddedCallback
 	EntityRemovedCallbacks []EntityRemovedCallback
 
-	ComponentAddedCallbacks     map[int][]ComponentAddedCallback
-	ComponentUpdatedCallbacks   map[int][]ComponentUpdatedCallback
-	ComponentRemovedCallbacks   map[int][]ComponentRemovedCallback
-	ComponentAuthorityCallbacks map[int][]ComponentAuthorityCallback
+	ComponentAddedCallbacks     map[uint][]ComponentAddedCallback
+	ComponentUpdatedCallbacks   map[uint][]ComponentUpdatedCallback
+	ComponentRemovedCallbacks   map[uint][]ComponentRemovedCallback
+	ComponentAuthorityCallbacks map[uint][]ComponentAuthorityCallback
 }
 
 func (dispatcher Dispatcher) dispatch(op example.Worker_Op) {
@@ -50,17 +50,40 @@ func (dispatcher Dispatcher) dispatch(op example.Worker_Op) {
 	switch opType {
 	case WORKER_OP_TYPE_ADD_ENTITY:
 		specificOp := op.GetAdd_entity()
+		entity_id := specificOp.GetEntity_id()
 		for _, callback := range dispatcher.EntityAddedCallbacks {
-			callback(specificOp.GetEntity_id())
+			callback(entity_id)
 		}
 
 	case WORKER_OP_TYPE_REMOVE_ENTITY:
 		specificOp := op.GetRemove_entity()
+		entity_id := specificOp.GetEntity_id()
 		for _, callback := range dispatcher.EntityRemovedCallbacks {
-			callback(specificOp.GetEntity_id())
+			callback(entity_id)
 		}
 
 	case WORKER_OP_TYPE_ADD_COMPONENT:
+		specificOp := op.GetAdd_component()
+		entity_id := specificOp.GetEntity_id()
+		component_data := specificOp.GetData()
+		for _, callback := range dispatcher.ComponentAddedCallbacks[component_data.GetComponent_id()] {
+			callback(entity_id, component_data)
+		}
+
+	case WORKER_OP_TYPE_COMPONENT_UPDATE:
+		specificOp := op.GetComponent_update()
+		entity_id := specificOp.GetEntity_id()
+		component_update := specificOp.GetUpdate()
+		for _, callback := range dispatcher.ComponentUpdatedCallbacks[component_update.GetComponent_id()] {
+			callback(entity_id, component_update)
+		}
+
+	case WORKER_OP_TYPE_REMOVE_COMPONENT:
+		specificOp := op.GetRemove_component()
+		entity_id := specificOp.GetEntity_id()
+		for _, callback := range dispatcher.ComponentRemovedCallbacks[specificOp.GetComponent_id()] {
+			callback(entity_id)
+		}
 
 	case WORKER_OP_TYPE_AUTHORITY_CHANGE:
 

@@ -49,6 +49,17 @@ func main() {
 		example.DeleteWorker_LogMessage(logMessage)
 		fmt.Println("Sent Welcome Log")
 
+		dispatcher := Dispatcher{}
+
+		dispatcher.OnPositionAdded(func(entity_id int64, data Position) {
+			fmt.Printf("GOT POS %d\n",  entity_id, data.Coords.X, data.Coords.Y, data.Coords.Z)
+		})
+
+		dispatcher.OnEntityAclAdded(func(entity_id int64, data EntityAcl) {
+			fmt.Printf("GOT ACL %d\n", entity_id, data.Read, data.Write)
+		})
+
+
 		for example.Worker_Connection_IsConnected(connection) > 0 {
 
 
@@ -60,6 +71,8 @@ func main() {
 				op := example.Worker_OpList_GetSpecificOp(ops, uint(i))
 				opType := WORKER_OP_TYPE(op.GetOp_type())
 
+				dispatcher.dispatch(op)
+
 				switch opType {
 				case WORKER_OP_TYPE_METRICS:
 					//fmt.Println("GOT METRICS")
@@ -69,23 +82,24 @@ func main() {
 					fmt.Printf("GOT ADD ENTITY: %d \n", addEntity.GetEntity_id())
 
 				case WORKER_OP_TYPE_ADD_COMPONENT:
-					addComponent := op.GetAdd_component()
-					component_id := addComponent.GetData().GetComponent_id()
-					entity_id := addComponent.GetEntity_id()
-					fmt.Printf("GOT ADD COMPONENT %d for ENTITY %d\n", component_id, entity_id)
-					if component_id == 54 {
-						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
-						position := ReadComponent_Position(fields)
-						fmt.Println("GOT POSITION ", position.Coords.X, position.Coords.Y, position.Coords.Z)
-					} else if component_id == 50 {
-						fmt.Println("GOT ACL")
-						fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
-						read := ReadList_Object_WorkerAttributeSet(fields, 1, 0)
-						write := ReadMap_Primitive_uint32_to_List_Object_WorkerAttributeSet(fields, 2, 0)
-
-
-						fmt.Printf("GOT ACL READ :%s - WRITE:%s", read, write)
-					}
+					//
+					//addComponent := op.GetAdd_component()
+					//component_id := addComponent.GetData().GetComponent_id()
+					//entity_id := addComponent.GetEntity_id()
+					//fmt.Printf("GOT ADD COMPONENT %d for ENTITY %d\n", component_id, entity_id)
+					//if component_id == 54 {
+					//	fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
+					//	position := ReadComponent_Position(fields)
+					//	fmt.Println("GOT POSITION ", position.Coords.X, position.Coords.Y, position.Coords.Z)
+					//} else if component_id == 50 {
+					//	fmt.Println("GOT ACL")
+					//	fields := example.Schema_GetComponentDataFields(addComponent.GetData().GetSchema_type())
+					//	read := ReadList_Object_WorkerAttributeSet(fields, 1, 0)
+					//	write := ReadMap_Primitive_uint32_to_List_Object_WorkerAttributeSet(fields, 2, 0)
+					//
+					//
+					//
+					//}
 
 				case WORKER_OP_TYPE_LOG_MESSAGE:
 					fmt.Println("GOT LOG")
