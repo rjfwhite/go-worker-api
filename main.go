@@ -59,7 +59,6 @@ func main() {
 			fmt.Printf("GOT ACL %d\n", entity_id, data.Read, data.Write)
 		})
 
-
 		for example.Worker_Connection_IsConnected(connection) > 0 {
 
 

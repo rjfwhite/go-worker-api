@@ -278,14 +278,23 @@ func main() {
 	fmt.Println(GenerateWriteObjectType(coordinatesType))
 	fmt.Println(GenerateReadObjectType(positionType))
 	fmt.Println(GenerateWriteObjectType(positionType))
+
 	fmt.Println(GenerateReadListType(ListType{Type:PrimitiveType{Name:"string"}}))
 	fmt.Println(GenerateWriteListType(ListType{Type:PrimitiveType{Name:"string"}}))
-	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerRequirementSet"}}))
-	fmt.Println(GenerateWriteListType(ListType{Type:ObjectType{"WorkerRequirementSet"}}))
+
 	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
 	fmt.Println(GenerateWriteListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
-	fmt.Println(GenerateReadMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerRequirementSet"}}}))
-	fmt.Println(GenerateWriteMapType(MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerRequirementSet"}}}))
+
+	fmt.Println(GenerateReadListType(aclFields[0].Type.(ListType)))
+	fmt.Println(GenerateWriteListType(aclFields[0].Type.(ListType)))
+	fmt.Print(GenerateReadOptionType(OptionType{aclFields[0].Type}))
+	fmt.Print(GenerateWriteOptionType(OptionType{aclFields[0].Type}))
+
+	fmt.Println(GenerateReadMapType(aclFields[1].Type.(MapType)))
+	fmt.Println(GenerateWriteMapType(aclFields[1].Type.(MapType)))
+	fmt.Print(GenerateReadOptionType(OptionType{aclFields[1].Type}))
+	fmt.Print(GenerateWriteOptionType(OptionType{aclFields[1].Type}))
+
 	fmt.Println(GenerateEnumType(testEnum))
 	fmt.Println(GenerateReadEnumType(testEnum))
 	fmt.Println(GenerateWriteEnumType(testEnum))

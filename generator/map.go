@@ -20,7 +20,7 @@ func GenerateReadMapType(t MapType) string {
 
 func GenerateWriteMapType(t MapType) string {
 	output := ""
-	output += fmt.Sprintf("func Write%s(object example.Schema_Object, field uint, index uint, value %s) {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += fmt.Sprintf("func Write%s(object example.Schema_Object, field uint, value %s) {\n", MethodSuffixForType(t), GoTypeFor(t))
 	output += "\tfor k, v := range(value) {\n"
 	output += "\t\tinnerObject := example.Schema_AddObject(object, field)\n"
 	output += fmt.Sprintf("\t\tWrite%s(innerObject, 1, k)\n", MethodSuffixForType(t.KeyType))

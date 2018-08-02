@@ -81,21 +81,6 @@ func WriteList_Primitive_string(object example.Schema_Object, field uint, value 
 	}
 }
 
-func ReadList_Object_WorkerRequirementSet(object example.Schema_Object, field uint, index uint) []WorkerRequirementSet {
-	count := example.Schema_GetObjectCount(object, field)
-	result := []WorkerRequirementSet{}
-	for i := uint(0); i < count; i++ {
-		result = append(result, ReadObject_WorkerRequirementSet(object, field, i))
-	}
-	return result
-}
-
-func WriteList_Object_WorkerRequirementSet(object example.Schema_Object, field uint, value []WorkerRequirementSet) {
-	for _, i := range (value) {
-		WriteObject_WorkerRequirementSet(object, field, i)
-	}
-}
-
 func ReadList_Object_WorkerAttributeSet(object example.Schema_Object, field uint, index uint) []WorkerAttributeSet {
 	count := example.Schema_GetObjectCount(object, field)
 	result := []WorkerAttributeSet{}
@@ -111,6 +96,33 @@ func WriteList_Object_WorkerAttributeSet(object example.Schema_Object, field uin
 	}
 }
 
+func ReadList_Object_WorkerRequirementSet(object example.Schema_Object, field uint, index uint) []WorkerRequirementSet {
+	count := example.Schema_GetObjectCount(object, field)
+	result := []WorkerRequirementSet{}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadObject_WorkerRequirementSet(object, field, i))
+	}
+	return result
+}
+
+func WriteList_Object_WorkerRequirementSet(object example.Schema_Object, field uint, value []WorkerRequirementSet) {
+	for _, i := range (value) {
+		WriteObject_WorkerRequirementSet(object, field, i)
+	}
+}
+
+func ReadOption_List_Object_WorkerRequirementSet(object example.Schema_Object, field uint, index uint) *[]WorkerRequirementSet {
+	if example.Schema_GetObjectCount(object, field) > 0 {
+		result := ReadList_Object_WorkerRequirementSet(object, field, index)
+		return &result
+	}
+	return nil
+}
+func WriteOption_List_Object_WorkerRequirementSet(object example.Schema_Object, field uint, value *[]WorkerRequirementSet) {
+	if value != nil {
+		WriteList_Object_WorkerRequirementSet(object, field, *value)
+	}
+}
 func ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet(object example.Schema_Object, field uint, index uint) map[uint][]WorkerRequirementSet {
 	count := example.Schema_GetObjectCount(object, field)
 	result := map[uint][]WorkerRequirementSet{}
@@ -123,11 +135,24 @@ func ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet(object example
 	return result
 }
 
-func WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet(object example.Schema_Object, field uint, index uint, value map[uint][]WorkerRequirementSet) {
+func WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet(object example.Schema_Object, field uint, value map[uint][]WorkerRequirementSet) {
 	for k, v := range (value) {
 		innerObject := example.Schema_AddObject(object, field)
 		WritePrimitive_uint32(innerObject, 1, k)
 		WriteList_Object_WorkerRequirementSet(innerObject, 2, v)
+	}
+}
+
+func ReadOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet(object example.Schema_Object, field uint, index uint) *map[uint][]WorkerRequirementSet {
+	if example.Schema_GetObjectCount(object, field) > 0 {
+		result := ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet(object, field, index)
+		return &result
+	}
+	return nil
+}
+func WriteOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet(object example.Schema_Object, field uint, value *map[uint][]WorkerRequirementSet) {
+	if value != nil {
+		WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet(object, field, *value)
 	}
 }
 
@@ -200,7 +225,7 @@ func (dispatcher *Dispatcher) OnPositionAdded(callback PositionAddedCallback) {
 		component := ReadComponent_Position(dataFields)
 		callback(entity_id, component)
 	}
-	dispatcher.ComponentAddedCallbacks[component_id] = []ComponentAddedCallback{innerCallback}
+	dispatcher.OnComponentAdded(component_id, innerCallback)
 }
 
 type EntityAcl struct {
@@ -220,12 +245,12 @@ func ReadComponent_EntityAcl(object example.Schema_Object) EntityAcl {
 	}
 }
 
-//func ReadComponentUpdate_EntityAcl(object example.Schema_Object) EntityAclUpdate {
-//	return EntityAclUpdate{
-//		Read:  ReadOption_List_Object_WorkerRequirementSet(object, 1, 0),
-//		Write: ReadOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet(object, 2, 0),
-//	}
-//}
+func ReadComponentUpdate_EntityAcl(object example.Schema_Object) EntityAclUpdate {
+	return EntityAclUpdate{
+		Read:  ReadOption_List_Object_WorkerRequirementSet(object, 1, 0),
+		Write: ReadOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet(object, 2, 0),
+	}
+}
 
 type EntityAclAddedCallback func(entity_id int64, data EntityAcl)
 type EntityAclUpdatedCallback func(entity_id int64, update EntityAclUpdate)
@@ -238,7 +263,7 @@ func (dispatcher *Dispatcher) OnEntityAclAdded(callback EntityAclAddedCallback) 
 		component := ReadComponent_EntityAcl(dataFields)
 		callback(entity_id, component)
 	}
-	dispatcher.ComponentAddedCallbacks[component_id] = []ComponentAddedCallback{innerCallback}
+	dispatcher.OnComponentAdded(component_id, innerCallback)
 }
 
 func ReadOption_Object_Coordinates(object example.Schema_Object, field uint, index uint) *Coordinates {

@@ -23,7 +23,7 @@ func GenerateAddComponentDispatcherMethod(t ComponentType) string {
 	output += fmt.Sprintf("\t\tcomponent := ReadComponent_%s(dataFields)\n", t.Name)
 	output += "\t\tcallback(entity_id, component)\n"
 	output += "\t}\n"
-	output += "\tdispatcher.ComponentAddedCallbacks[component_id] = []ComponentAddedCallback{innerCallback}\n"
+	output += "\tdispatcher.OnComponentAdded(component_id, innerCallback)\n"
 	output += "}\n"
 	return output
 }

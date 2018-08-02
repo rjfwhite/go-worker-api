@@ -45,6 +45,47 @@ type Dispatcher struct {
 	ComponentAuthorityCallbacks map[uint][]ComponentAuthorityCallback
 }
 
+func (dispatcher* Dispatcher) OnEntityAdded(callback EntityAddedCallback) {
+	dispatcher.EntityAddedCallbacks = append(dispatcher.EntityAddedCallbacks, callback)
+}
+
+func (dispatcher* Dispatcher) OnEntityRemoved(callback EntityRemovedCallback) {
+	dispatcher.EntityRemovedCallbacks = append(dispatcher.EntityRemovedCallbacks, callback)
+}
+
+func (dispatcher* Dispatcher) OnComponentAdded(component_id uint, callback ComponentAddedCallback) {
+	if dispatcher.ComponentAddedCallbacks[component_id] == nil {
+		dispatcher.ComponentAddedCallbacks[component_id] = []ComponentAddedCallback{}
+	}
+
+	dispatcher.ComponentAddedCallbacks[component_id] = append(dispatcher.ComponentAddedCallbacks[component_id], callback)
+}
+
+func (dispatcher* Dispatcher) OnComponentUpdated(component_id uint, callback ComponentUpdatedCallback) {
+	if dispatcher.ComponentUpdatedCallbacks[component_id] == nil {
+		dispatcher.ComponentUpdatedCallbacks[component_id] = []ComponentUpdatedCallback{}
+	}
+
+	dispatcher.ComponentUpdatedCallbacks[component_id] = append(dispatcher.ComponentUpdatedCallbacks[component_id], callback)
+}
+
+func (dispatcher* Dispatcher) OnComponentRemoved(component_id uint, callback ComponentRemovedCallback) {
+	if dispatcher.ComponentRemovedCallbacks[component_id] == nil {
+		dispatcher.ComponentRemovedCallbacks[component_id] = []ComponentRemovedCallback{}
+	}
+
+	dispatcher.ComponentRemovedCallbacks[component_id] = append(dispatcher.ComponentRemovedCallbacks[component_id], callback)
+}
+
+func (dispatcher* Dispatcher) OnComponentAuthority(component_id uint, callback ComponentAuthorityCallback) {
+	if dispatcher.ComponentAuthorityCallbacks[component_id] == nil {
+		dispatcher.ComponentAuthorityCallbacks[component_id] = []ComponentAuthorityCallback{}
+	}
+
+	dispatcher.ComponentAuthorityCallbacks[component_id] = append(dispatcher.ComponentAuthorityCallbacks[component_id], callback)
+}
+
+
 func (dispatcher Dispatcher) dispatch(op example.Worker_Op) {
 	opType := WORKER_OP_TYPE(op.GetOp_type())
 	switch opType {
