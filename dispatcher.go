@@ -45,6 +45,18 @@ type Dispatcher struct {
 	ComponentAuthorityCallbacks map[uint][]ComponentAuthorityCallback
 }
 
+func MakeDispatcher() *Dispatcher {
+	dispatcher := Dispatcher{}
+	dispatcher.EntityAddedCallbacks = []EntityAddedCallback{}
+	dispatcher.EntityRemovedCallbacks = []EntityRemovedCallback{}
+
+	dispatcher.ComponentAddedCallbacks = map[uint][]ComponentAddedCallback{}
+	dispatcher.ComponentUpdatedCallbacks = map[uint][]ComponentUpdatedCallback{}
+	dispatcher.ComponentRemovedCallbacks = map[uint][]ComponentRemovedCallback{}
+	dispatcher.ComponentAuthorityCallbacks = map[uint][]ComponentAuthorityCallback{}
+	return &dispatcher
+}
+
 func (dispatcher* Dispatcher) OnEntityAdded(callback EntityAddedCallback) {
 	dispatcher.EntityAddedCallbacks = append(dispatcher.EntityAddedCallbacks, callback)
 }
@@ -85,23 +97,11 @@ func (dispatcher* Dispatcher) OnComponentAuthority(component_id uint, callback C
 	dispatcher.ComponentAuthorityCallbacks[component_id] = append(dispatcher.ComponentAuthorityCallbacks[component_id], callback)
 }
 
-func (dispatcher * Dispatcher) Init() {
-	dispatcher.EntityAddedCallbacks = []EntityAddedCallback{}
-	dispatcher.EntityRemovedCallbacks = []EntityRemovedCallback{}
-
-	dispatcher.ComponentAddedCallbacks = map[uint][]ComponentAddedCallback{}
-	dispatcher.ComponentUpdatedCallbacks = map[uint][]ComponentUpdatedCallback{}
-	dispatcher.ComponentRemovedCallbacks = map[uint][]ComponentRemovedCallback{}
-	dispatcher.ComponentAuthorityCallbacks = map[uint][]ComponentAuthorityCallback{}
-}
-
-func (dispatcher Dispatcher) dispatchOps(ops example.Worker_OpList) {
-	count := ops.GetOp_count()
-	for i := uint(0); i < count; i++ {
-		dispatcher.dispatchOp(example.Worker_OpList_GetSpecificOp(ops, i))
+func (dispatcher Dispatcher) dispatchOps(ops []example.Worker_Op) {
+	for _, op := range(ops) {
+		dispatcher.dispatchOp(op)
 	}
 }
-
 
 func (dispatcher Dispatcher) dispatchOp(op example.Worker_Op) {
 	opType := WORKER_OP_TYPE(op.GetOp_type())

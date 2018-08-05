@@ -247,6 +247,14 @@ func (dispatcher *Dispatcher) OnPositionRemoved(callback ComponentRemovedCallbac
 	dispatcher.OnComponentRemoved(component_id, callback)
 }
 
+func (connection Connection) SendPositionUpdate(entity_id int64, value PositionUpdate) {
+	component_id := uint(54)
+	component_update := example.Schema_CreateComponentUpdate(component_id)
+	component_update_fields := example.Schema_GetComponentUpdateFields(component_update)
+	WriteComponentUpdate_Position(component_update_fields, value)
+	connection.SendComponentUpdate(entity_id, component_id, component_update)
+}
+
 type EntityAcl struct {
 	Read  []WorkerRequirementSet
 	Write map[uint][]WorkerRequirementSet
@@ -312,6 +320,14 @@ func (dispatcher *Dispatcher) OnEntityAclAuthority(callback ComponentAuthorityCa
 func (dispatcher *Dispatcher) OnEntityAclRemoved(callback ComponentRemovedCallback) {
 	component_id := uint(50)
 	dispatcher.OnComponentRemoved(component_id, callback)
+}
+
+func (connection Connection) SendEntityAclUpdate(entity_id int64, value EntityAclUpdate) {
+	component_id := uint(50)
+	component_update := example.Schema_CreateComponentUpdate(component_id)
+	component_update_fields := example.Schema_GetComponentUpdateFields(component_update)
+	WriteComponentUpdate_EntityAcl(component_update_fields, value)
+	connection.SendComponentUpdate(entity_id, component_id, component_update)
 }
 
 func ReadOption_Object_Coordinates(object example.Schema_Object, field uint, index uint) *Coordinates {

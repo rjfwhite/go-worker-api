@@ -1,11 +1,8 @@
 package main
 
 import (
-	"github.com/rjfwhite/go-worker-api/example"
-	"math/rand"
 	"time"
 	"fmt"
-	"math"
 )
 
 type EntityComponent struct {
@@ -16,40 +13,13 @@ type EntityComponent struct {
 func main() {
 	authoritativeComponents := make(map[EntityComponent]bool)
 
-	params := example.Worker_DefaultConnectionParameters()
-	params.SetWorker_type("Managed")
-
-	vtable := example.NewWorker_ComponentVtable()
-	params.SetDefault_component_vtable(vtable)
-
-	rand.Seed(int64(time.Now().UnixNano()))
-
-	workerId := fmt.Sprintf("Managed%d", rand.Int())
-	fmt.Println("WorkerId " + workerId)
-
-	future := example.Worker_ConnectAsync("localhost", 7777, workerId, params)
-
-	timeout := uint(1000)
-	connection := example.Worker_ConnectionFuture_Get(future, &timeout)
-	example.Worker_ConnectionFuture_Destroy(future)
+	connection := MakeConnection()
+	dispatcher := MakeDispatcher()
 
 	fmt.Println("Checking if connected")
-	if example.Worker_Connection_IsConnected(connection) > 0 {
+	if connection.Connect() {
 		fmt.Println("Connected!")
-
-		fmt.Println("Sending Welcome Log")
-		logMessage := example.NewWorker_LogMessage()
-		logMessage.SetLevel(4)
-		logMessage.SetEntity_id(nil)
-		logMessage.SetLogger_name("mylogger")
-		logMessage.SetMessage("Hello, World!")
-		example.Worker_Connection_SendLogMessage(connection, logMessage)
-		example.DeleteWorker_LogMessage(logMessage)
-		fmt.Println("Sent Welcome Log")
-
-		dispatcher := Dispatcher{}
-
-		dispatcher.Init()
+		connection.SendLog("mylogger", "Hello, World!")
 
 		dispatcher.OnEntityAdded(func(entity_id int64) {
 			fmt.Printf("ENTITY ADDED %d", entity_id)
@@ -71,14 +41,16 @@ func main() {
 			fmt.Printf("GOT POSUP %d\n", entity_id, update.Coords.X, update.Coords.Y, update.Coords.Z)
 		})
 
-		for example.Worker_Connection_IsConnected(connection) > 0 {
-			ops := example.Worker_Connection_GetOpList(connection, uint(100))
-			dispatcher.dispatchOps(ops)
-			example.Worker_OpList_Destroy(ops)
+		for connection.IsConnected() {
+
+			dispatcher.dispatchOps(connection.ReadOps())
+
 			for ec, value := range (authoritativeComponents) {
 				if value {
 					if ec.component_id == 54 {
-						sendPositionUpdate(connection, ec.entity_id, math.Sin(float64(time.Now().UnixNano())/1000000000.0)*10, 2, 3)
+						x := (float64(time.Now().UnixNano()) / 1000000000.0) * 10.0
+						newCoordinates := Coordinates{x, 2.0, 3.0}
+						connection.SendPositionUpdate(ec.entity_id, PositionUpdate{&newCoordinates})
 					}
 				}
 			}
@@ -87,19 +59,4 @@ func main() {
 	} else {
 		fmt.Println("Did not Connect!")
 	}
-}
-
-func sendPositionUpdate(connection example.Worker_Connection, entity_id int64, x float64, y float64, z float64) {
-
-	componentUpdate := example.Schema_CreateComponentUpdate(54)
-	componentUpdateFields := example.Schema_GetComponentUpdateFields(componentUpdate)
-
-	newCoordinates := Coordinates{x, y, z}
-
-	WriteComponentUpdate_Position(componentUpdateFields, PositionUpdate{&newCoordinates})
-
-	workerComponentUpdate := example.NewWorker_ComponentUpdate()
-	workerComponentUpdate.SetComponent_id(54)
-	workerComponentUpdate.SetSchema_type(componentUpdate)
-	example.Worker_Connection_SendComponentUpdate(connection, entity_id, workerComponentUpdate)
 }

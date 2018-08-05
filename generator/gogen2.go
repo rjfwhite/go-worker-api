@@ -312,6 +312,7 @@ func main() {
 	fmt.Println(GenerateUpdateComponentDispatcherMethod(positionComponenType))
 	fmt.Println(GenerateAuthorityComponentDispatcherMethod(positionComponenType))
 	fmt.Println(GenerateRemoveComponentDispatcherMethod(positionComponenType))
+	fmt.Println(GenerateUpdateComponentConnectionMethod(positionComponenType))
 
 	fmt.Println(GenerateComponentType(aclComponentType))
 	fmt.Println(GenerateComponentUpdateType(aclComponentType))
@@ -324,6 +325,7 @@ func main() {
 	fmt.Println(GenerateUpdateComponentDispatcherMethod(aclComponentType))
 	fmt.Println(GenerateAuthorityComponentDispatcherMethod(aclComponentType))
 	fmt.Println(GenerateRemoveComponentDispatcherMethod(aclComponentType))
+	fmt.Println(GenerateUpdateComponentConnectionMethod(aclComponentType))
 
 
 	fmt.Println(GenerateReadOptionType(OptionType{Type:ObjectType{"Coordinates"}}))
