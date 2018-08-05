@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 	"fmt"
+	"math"
 )
 
 type EntityComponent struct {
@@ -38,7 +39,7 @@ func main() {
 		})
 
 		dispatcher.OnPositionUpdated(func(entity_id int64, update PositionUpdate) {
-			fmt.Printf("GOT POSUP %d\n", entity_id, update.Coords.X, update.Coords.Y, update.Coords.Z)
+			//fmt.Printf("GOT POSUP %d\n", entity_id, update.Coords.X, update.Coords.Y, update.Coords.Z)
 		})
 
 		for connection.IsConnected() {
@@ -48,7 +49,7 @@ func main() {
 			for ec, value := range (authoritativeComponents) {
 				if value {
 					if ec.component_id == 54 {
-						x := (float64(time.Now().UnixNano()) / 1000000000.0) * 10.0
+						x := math.Sin(float64(time.Now().UnixNano()) / 1000000000.0) * 10.0
 						newCoordinates := Coordinates{x, 2.0, 3.0}
 						connection.SendPositionUpdate(ec.entity_id, PositionUpdate{&newCoordinates})
 					}

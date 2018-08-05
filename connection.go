@@ -43,7 +43,7 @@ func (connection Connection) ReadOps() []example.Worker_Op {
 	for i := uint(0); i < count; i++ {
 		result = append(result, example.Worker_OpList_GetSpecificOp(ops, i))
 	}
-	example.Worker_OpList_Destroy(ops)
+	//example.Worker_OpList_Destroy(ops)
 	return result
 }
 
