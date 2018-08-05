@@ -247,6 +247,25 @@ func GenerateWriter(t SchemaType) string {
 	return output
 }
 
+func EnumerateTypes(components []ComponentType) []interface{} {
+	found_types := map[interface{}]bool{}
+
+	for _, component := range(components) {
+		found_types[component.Data] = true
+		for _, field := range(component.Data.Fields) {
+			found_types[field] = true
+			found_types[OptionType{field}] = true
+		}
+	}
+
+	result := []interface{}
+	for _, found_type := range(found_types) {
+		result = append(result, found_type)
+	}
+
+	return result
+}
+
 func main() {
 	positionFields := []SchemaField{{Name: "Coords", Type: ObjectType{Name:"Coordinates"}, Id: 1}}
 	positionType := SchemaType{Package: "", Name: "Position", Fields: positionFields}
