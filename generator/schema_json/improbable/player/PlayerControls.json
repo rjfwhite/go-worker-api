@@ -1,0 +1,62 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\player\\PlayerControls.schema",
+ "canonicalName": "improbable/player/PlayerControls.schema",
+ "package": "improbable.player",
+ "imports": [
+  "improbable/standard_library.schema"
+ ],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 7,
+    "column": 3
+   },
+   "name": "PlayerControlsData",
+   "qualifiedName": "improbable.player.PlayerControlsData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 7,
+      "column": 3
+     },
+     "name": "target_position",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 7,
+       "column": 3
+      },
+      "userType": "improbable.Coordinates"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 5,
+    "column": 1
+   },
+   "name": "PlayerControls",
+   "qualifiedName": "improbable.player.PlayerControls",
+   "id": 1200,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 7,
+     "column": 3
+    },
+    "userType": "improbable.player.PlayerControlsData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}

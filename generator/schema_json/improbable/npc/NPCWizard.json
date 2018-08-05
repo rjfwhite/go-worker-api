@@ -1,0 +1,154 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\npc\\NPCWizard.schema",
+ "canonicalName": "improbable/npc/NPCWizard.schema",
+ "package": "improbable.npc",
+ "imports": [
+  "improbable/vector3.schema"
+ ],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 5,
+    "column": 1
+   },
+   "name": "WizardFSMState",
+   "qualifiedName": "improbable.npc.WizardFSMState",
+   "enumDefinitions": [
+    {
+     "sourceReference": {
+      "line": 6,
+      "column": 3
+     },
+     "name": "StateEnum",
+     "qualifiedName": "improbable.npc.WizardFSMState.StateEnum",
+     "valueDefinitions": [
+      {
+       "sourceReference": {
+        "line": 7,
+        "column": 5
+       },
+       "name": "IDLE",
+       "value": 0
+      },
+      {
+       "sourceReference": {
+        "line": 8,
+        "column": 5
+       },
+       "name": "MOVING_TO_TARGET",
+       "value": 1
+      },
+      {
+       "sourceReference": {
+        "line": 9,
+        "column": 5
+       },
+       "name": "ATTACKING_TARGET",
+       "value": 2
+      },
+      {
+       "sourceReference": {
+        "line": 10,
+        "column": 5
+       },
+       "name": "DEFENDING_TARGET",
+       "value": 3
+      },
+      {
+       "sourceReference": {
+        "line": 11,
+        "column": 5
+       },
+       "name": "ON_FIRE",
+       "value": 4
+      }
+     ]
+    }
+   ],
+   "typeDefinitions": [],
+   "fieldDefinitions": []
+  },
+  {
+   "sourceReference": {
+    "line": 15,
+    "column": 1
+   },
+   "name": "NPCWizardData",
+   "qualifiedName": "improbable.npc.NPCWizardData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 16,
+      "column": 3
+     },
+     "name": "current_state",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 16,
+       "column": 3
+      },
+      "userType": "improbable.npc.WizardFSMState.StateEnum"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 17,
+      "column": 3
+     },
+     "name": "target_entity_id",
+     "number": 2,
+     "singularType": {
+      "sourceReference": {
+       "line": 17,
+       "column": 3
+      },
+      "builtInType": "EntityId"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 18,
+      "column": 3
+     },
+     "name": "target_position",
+     "number": 3,
+     "singularType": {
+      "sourceReference": {
+       "line": 18,
+       "column": 3
+      },
+      "userType": "improbable.Vector3f"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 21,
+    "column": 1
+   },
+   "name": "NPCWizard",
+   "qualifiedName": "improbable.npc.NPCWizard",
+   "id": 1802,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 23,
+     "column": 8
+    },
+    "userType": "improbable.npc.NPCWizardData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}

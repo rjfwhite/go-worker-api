@@ -1,0 +1,237 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\abilities\\Spells.schema",
+ "canonicalName": "improbable/abilities/Spells.schema",
+ "package": "improbable.abilities",
+ "imports": [
+  "improbable/standard_library.schema",
+  "improbable/core/Nothing.schema"
+ ],
+ "enumDefinitions": [
+  {
+   "sourceReference": {
+    "line": 6,
+    "column": 1
+   },
+   "name": "SpellType",
+   "qualifiedName": "improbable.abilities.SpellType",
+   "valueDefinitions": [
+    {
+     "sourceReference": {
+      "line": 7,
+      "column": 3
+     },
+     "name": "LIGHTNING",
+     "value": 0
+    },
+    {
+     "sourceReference": {
+      "line": 8,
+      "column": 3
+     },
+     "name": "RAIN",
+     "value": 1
+    }
+   ]
+  }
+ ],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 11,
+    "column": 1
+   },
+   "name": "SpellCastRequest",
+   "qualifiedName": "improbable.abilities.SpellCastRequest",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 12,
+      "column": 3
+     },
+     "name": "spell_type",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 12,
+       "column": 3
+      },
+      "userType": "improbable.abilities.SpellType"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 13,
+      "column": 3
+     },
+     "name": "position",
+     "number": 2,
+     "singularType": {
+      "sourceReference": {
+       "line": 13,
+       "column": 3
+      },
+      "userType": "improbable.Coordinates"
+     }
+    }
+   ]
+  },
+  {
+   "sourceReference": {
+    "line": 16,
+    "column": 1
+   },
+   "name": "SpellAnimationEvent",
+   "qualifiedName": "improbable.abilities.SpellAnimationEvent",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 17,
+      "column": 3
+     },
+     "name": "spell_type",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 17,
+       "column": 3
+      },
+      "userType": "improbable.abilities.SpellType"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 18,
+      "column": 3
+     },
+     "name": "position",
+     "number": 2,
+     "singularType": {
+      "sourceReference": {
+       "line": 18,
+       "column": 3
+      },
+      "userType": "improbable.Coordinates"
+     }
+    }
+   ]
+  },
+  {
+   "sourceReference": {
+    "line": 21,
+    "column": 1
+   },
+   "name": "SpellsData",
+   "qualifiedName": "improbable.abilities.SpellsData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 22,
+      "column": 3
+     },
+     "name": "cooldowns",
+     "number": 1,
+     "mapType": {
+      "keyType": {
+       "sourceReference": {
+        "line": 22,
+        "column": 7
+       },
+       "userType": "improbable.abilities.SpellType"
+      },
+      "valueType": {
+       "sourceReference": {
+        "line": 22,
+        "column": 18
+       },
+       "builtInType": "float"
+      }
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 23,
+      "column": 3
+     },
+     "name": "can_cast_spells",
+     "number": 2,
+     "singularType": {
+      "sourceReference": {
+       "line": 23,
+       "column": 3
+      },
+      "builtInType": "bool"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 26,
+    "column": 1
+   },
+   "name": "Spells",
+   "qualifiedName": "improbable.abilities.Spells",
+   "id": 1500,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 28,
+     "column": 8
+    },
+    "userType": "improbable.abilities.SpellsData"
+   },
+   "eventDefinitions": [
+    {
+     "sourceReference": {
+      "line": 30,
+      "column": 3
+     },
+     "name": "spell_animation_event",
+     "type": {
+      "sourceReference": {
+       "line": 30,
+       "column": 9
+      },
+      "userType": "improbable.abilities.SpellAnimationEvent"
+     },
+     "eventIndex": 1
+    }
+   ],
+   "commandDefinitions": [
+    {
+     "sourceReference": {
+      "line": 29,
+      "column": 3
+     },
+     "name": "spell_cast_request",
+     "requestType": {
+      "sourceReference": {
+       "line": 29,
+       "column": 43
+      },
+      "userType": "improbable.abilities.SpellCastRequest"
+     },
+     "responseType": {
+      "sourceReference": {
+       "line": 29,
+       "column": 11
+      },
+      "userType": "improbable.core.Nothing"
+     },
+     "commandIndex": 1
+    }
+   ]
+  }
+ ]
+}

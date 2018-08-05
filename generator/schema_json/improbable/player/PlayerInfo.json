@@ -1,0 +1,77 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\player\\PlayerInfo.schema",
+ "canonicalName": "improbable/player/PlayerInfo.schema",
+ "package": "improbable.player",
+ "imports": [
+  "improbable/standard_library.schema"
+ ],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 7,
+    "column": 3
+   },
+   "name": "PlayerInfoData",
+   "qualifiedName": "improbable.player.PlayerInfoData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 7,
+      "column": 3
+     },
+     "name": "is_alive",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 7,
+       "column": 3
+      },
+      "builtInType": "bool"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 8,
+      "column": 3
+     },
+     "name": "initial_spawn_position",
+     "number": 2,
+     "singularType": {
+      "sourceReference": {
+       "line": 8,
+       "column": 3
+      },
+      "userType": "improbable.Coordinates"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 5,
+    "column": 1
+   },
+   "name": "PlayerInfo",
+   "qualifiedName": "improbable.player.PlayerInfo",
+   "id": 1201,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 7,
+     "column": 3
+    },
+    "userType": "improbable.player.PlayerInfoData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}

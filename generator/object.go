@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func GenerateObjectType(t SchemaType) string {
+func GenerateObjectType(t ObjectType) string {
 	output := ""
 	output += fmt.Sprintf("type %s struct {\n", t.Name)
 	for _, f := range t.Fields {
@@ -12,7 +12,7 @@ func GenerateObjectType(t SchemaType) string {
 	return output
 }
 
-func GenerateReadObjectType(t SchemaType) string {
+func GenerateReadObjectType(t ObjectType) string {
 	output := ""
 	output += fmt.Sprintf("func ReadObject_%s(object example.Schema_Object, field uint, index uint) %s {\n", t.Name, t.Name)
 	output += fmt.Sprintf("\tinnerObject := example.Schema_IndexObject(object, field, index)\n")
@@ -25,7 +25,7 @@ func GenerateReadObjectType(t SchemaType) string {
 	return output
 }
 
-func GenerateWriteObjectType(t SchemaType) string {
+func GenerateWriteObjectType(t ObjectType) string {
 	output := ""
 	output += fmt.Sprintf("func WriteObject_%s(object example.Schema_Object, field uint, value %s) {\n", t.Name, t.Name)
 	output += "\tinnerObject := example.Schema_AddObject(object, field)\n"

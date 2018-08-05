@@ -1,0 +1,62 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\building\\HQInfo.schema",
+ "canonicalName": "improbable/building/HQInfo.schema",
+ "package": "improbable.building",
+ "imports": [],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 3,
+    "column": 1
+   },
+   "name": "HQInfoData",
+   "qualifiedName": "improbable.building.HQInfoData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 4,
+      "column": 3
+     },
+     "name": "barracks",
+     "number": 1,
+     "listType": {
+      "valueType": {
+       "sourceReference": {
+        "line": 4,
+        "column": 8
+       },
+       "builtInType": "EntityId"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 7,
+    "column": 1
+   },
+   "name": "HQInfo",
+   "qualifiedName": "improbable.building.HQInfo",
+   "id": 1700,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 9,
+     "column": 8
+    },
+    "userType": "improbable.building.HQInfoData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}

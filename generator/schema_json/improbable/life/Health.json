@@ -1,0 +1,90 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\life\\Health.schema",
+ "canonicalName": "improbable/life/Health.schema",
+ "package": "improbable.life",
+ "imports": [],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 5,
+    "column": 3
+   },
+   "name": "HealthData",
+   "qualifiedName": "improbable.life.HealthData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 5,
+      "column": 3
+     },
+     "name": "current_health",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 5,
+       "column": 3
+      },
+      "builtInType": "int32"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 6,
+      "column": 3
+     },
+     "name": "max_health",
+     "number": 2,
+     "singularType": {
+      "sourceReference": {
+       "line": 6,
+       "column": 3
+      },
+      "builtInType": "int32"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 7,
+      "column": 3
+     },
+     "name": "can_be_changed",
+     "number": 3,
+     "singularType": {
+      "sourceReference": {
+       "line": 7,
+       "column": 3
+      },
+      "builtInType": "bool"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 3,
+    "column": 1
+   },
+   "name": "Health",
+   "qualifiedName": "improbable.life.Health",
+   "id": 1300,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 5,
+     "column": 3
+    },
+    "userType": "improbable.life.HealthData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}

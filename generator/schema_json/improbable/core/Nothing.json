@@ -1,0 +1,25 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\core\\Nothing.schema",
+ "canonicalName": "improbable/core/Nothing.schema",
+ "package": "improbable.core",
+ "imports": [],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 3,
+    "column": 1
+   },
+   "name": "Nothing",
+   "qualifiedName": "improbable.core.Nothing",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": []
+  }
+ ],
+ "componentDefinitions": []
+}

@@ -1,0 +1,87 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\building\\BarracksInfo.schema",
+ "canonicalName": "improbable/building/BarracksInfo.schema",
+ "package": "improbable.building",
+ "imports": [],
+ "enumDefinitions": [
+  {
+   "sourceReference": {
+    "line": 3,
+    "column": 1
+   },
+   "name": "BarracksState",
+   "qualifiedName": "improbable.building.BarracksState",
+   "valueDefinitions": [
+    {
+     "sourceReference": {
+      "line": 4,
+      "column": 3
+     },
+     "name": "UNDER_CONSTRUCTION",
+     "value": 0
+    },
+    {
+     "sourceReference": {
+      "line": 5,
+      "column": 3
+     },
+     "name": "CONSTRUCTION_FINISHED",
+     "value": 1
+    }
+   ]
+  }
+ ],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 8,
+    "column": 1
+   },
+   "name": "BarracksInfoData",
+   "qualifiedName": "improbable.building.BarracksInfoData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 9,
+      "column": 3
+     },
+     "name": "barracks_state",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 9,
+       "column": 3
+      },
+      "userType": "improbable.building.BarracksState"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 12,
+    "column": 1
+   },
+   "name": "BarracksInfo",
+   "qualifiedName": "improbable.building.BarracksInfo",
+   "id": 1701,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 14,
+     "column": 8
+    },
+    "userType": "improbable.building.BarracksInfoData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}

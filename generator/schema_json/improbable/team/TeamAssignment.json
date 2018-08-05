@@ -1,0 +1,60 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\team\\TeamAssignment.schema",
+ "canonicalName": "improbable/team/TeamAssignment.schema",
+ "package": "improbable.team",
+ "imports": [],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 5,
+    "column": 3
+   },
+   "name": "TeamAssignmentData",
+   "qualifiedName": "improbable.team.TeamAssignmentData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 5,
+      "column": 3
+     },
+     "name": "team_id",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 5,
+       "column": 3
+      },
+      "builtInType": "uint32"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 3,
+    "column": 1
+   },
+   "name": "TeamAssignment",
+   "qualifiedName": "improbable.team.TeamAssignment",
+   "id": 1005,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 5,
+     "column": 3
+    },
+    "userType": "improbable.team.TeamAssignmentData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}

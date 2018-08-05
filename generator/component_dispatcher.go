@@ -16,8 +16,8 @@ func (dispatcher *Dispatcher) OnPositionAdded(callback PositionAddedCallback) {
 
 func GenerateComponentEventCallbacks(t ComponentType) string {
 	output := ""
-	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Name, GoTypeFor(ObjectType{t.Name}))
-	output += fmt.Sprintf("type %sUpdatedCallback func(entity_id int64, update %s)\n", t.Name, GoTypeFor(ObjectType{t.Name}) + "Update")
+	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Name, GoTypeFor(t))
+	output += fmt.Sprintf("type %sUpdatedCallback func(entity_id int64, update %s)\n", t.Name, GoTypeFor(t) + "Update")
 	return output
 }
 

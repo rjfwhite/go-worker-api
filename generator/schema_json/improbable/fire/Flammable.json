@@ -1,0 +1,240 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\fire\\Flammable.schema",
+ "canonicalName": "improbable/fire/Flammable.schema",
+ "package": "improbable.fire",
+ "imports": [
+  "improbable/core/Nothing.schema"
+ ],
+ "enumDefinitions": [
+  {
+   "sourceReference": {
+    "line": 5,
+    "column": 1
+   },
+   "name": "FireEffectType",
+   "qualifiedName": "improbable.fire.FireEffectType",
+   "valueDefinitions": [
+    {
+     "sourceReference": {
+      "line": 6,
+      "column": 3
+     },
+     "name": "BIG",
+     "value": 0
+    },
+    {
+     "sourceReference": {
+      "line": 7,
+      "column": 3
+     },
+     "name": "SMALL",
+     "value": 1
+    }
+   ]
+  }
+ ],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 10,
+    "column": 1
+   },
+   "name": "ExtinguishRequest",
+   "qualifiedName": "improbable.fire.ExtinguishRequest",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 11,
+      "column": 3
+     },
+     "name": "can_be_ignited",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 11,
+       "column": 3
+      },
+      "builtInType": "bool"
+     }
+    }
+   ]
+  },
+  {
+   "sourceReference": {
+    "line": 14,
+    "column": 1
+   },
+   "name": "SetCanBeIgnitedRequest",
+   "qualifiedName": "improbable.fire.SetCanBeIgnitedRequest",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 15,
+      "column": 3
+     },
+     "name": "can_be_ignited",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 15,
+       "column": 3
+      },
+      "builtInType": "bool"
+     }
+    }
+   ]
+  },
+  {
+   "sourceReference": {
+    "line": 21,
+    "column": 3
+   },
+   "name": "FlammableData",
+   "qualifiedName": "improbable.fire.FlammableData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 21,
+      "column": 3
+     },
+     "name": "is_on_fire",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 21,
+       "column": 3
+      },
+      "builtInType": "bool"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 22,
+      "column": 3
+     },
+     "name": "can_be_ignited",
+     "number": 2,
+     "singularType": {
+      "sourceReference": {
+       "line": 22,
+       "column": 3
+      },
+      "builtInType": "bool"
+     }
+    },
+    {
+     "sourceReference": {
+      "line": 23,
+      "column": 3
+     },
+     "name": "effect_type",
+     "number": 3,
+     "singularType": {
+      "sourceReference": {
+       "line": 23,
+       "column": 3
+      },
+      "userType": "improbable.fire.FireEffectType"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 18,
+    "column": 1
+   },
+   "name": "Flammable",
+   "qualifiedName": "improbable.fire.Flammable",
+   "id": 1400,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 21,
+     "column": 3
+    },
+    "userType": "improbable.fire.FlammableData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": [
+    {
+     "sourceReference": {
+      "line": 25,
+      "column": 3
+     },
+     "name": "ignite",
+     "requestType": {
+      "sourceReference": {
+       "line": 25,
+       "column": 42
+      },
+      "userType": "improbable.core.Nothing"
+     },
+     "responseType": {
+      "sourceReference": {
+       "line": 25,
+       "column": 11
+      },
+      "userType": "improbable.core.Nothing"
+     },
+     "commandIndex": 1
+    },
+    {
+     "sourceReference": {
+      "line": 26,
+      "column": 3
+     },
+     "name": "extinguish",
+     "requestType": {
+      "sourceReference": {
+       "line": 26,
+       "column": 46
+      },
+      "userType": "improbable.fire.ExtinguishRequest"
+     },
+     "responseType": {
+      "sourceReference": {
+       "line": 26,
+       "column": 11
+      },
+      "userType": "improbable.core.Nothing"
+     },
+     "commandIndex": 2
+    },
+    {
+     "sourceReference": {
+      "line": 27,
+      "column": 3
+     },
+     "name": "set_can_be_ignited",
+     "requestType": {
+      "sourceReference": {
+       "line": 27,
+       "column": 54
+      },
+      "userType": "improbable.fire.SetCanBeIgnitedRequest"
+     },
+     "responseType": {
+      "sourceReference": {
+       "line": 27,
+       "column": 11
+      },
+      "userType": "improbable.core.Nothing"
+     },
+     "commandIndex": 3
+    }
+   ]
+  }
+ ]
+}

@@ -2,20 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 )
-
-type SchemaType struct {
-	Package string
-	Name    string
-	Fields  []SchemaField
-}
 
 type ComponentType struct {
 	Package string
 	Name    string
-	Data SchemaType
-	Events []SchemaField
-	Id uint
+	Fields  []SchemaField
+	Id      uint
 }
 
 type SchemaField struct {
@@ -30,12 +24,14 @@ type PrimitiveType struct {
 
 type EnumType struct {
 	Package string
-	Name string
-	values map[int]string
+	Name    string
+	values  map[int]string
 }
 
 type ObjectType struct {
-	Name string
+	Package string
+	Name    string
+	Fields  []SchemaField
 }
 
 type OptionType struct {
@@ -47,7 +43,7 @@ type ListType struct {
 }
 
 type MapType struct {
-	KeyType interface{}
+	KeyType   interface{}
 	ValueType interface{}
 }
 
@@ -80,6 +76,8 @@ func GoTypeFor(t interface{}) string {
 		return "[]" + GoTypeFor(t.(ListType).Type)
 	case ObjectType:
 		return t.(ObjectType).Name
+	case ComponentType:
+		return t.(ComponentType).Name
 	case MapType:
 		return fmt.Sprintf("map[%s]%s", GoTypeFor(t.(MapType).KeyType), GoTypeFor(t.(MapType).ValueType))
 	case OptionType:
@@ -143,211 +141,118 @@ func MethodSuffixForType(t interface{}) string {
 	return ""
 }
 
-func GenerateUpdateStruct(t SchemaType) string {
-	output := ""
-	output += fmt.Sprintf("type %sUpdate struct {\n", t.Name)
+func TraverseTypeDependencies(types []interface{}) []interface{} {
+	found_types := map[string]interface{}{}
+	exploration_queue := types
 
-	for _, f := range t.Fields {
-		output += fmt.Sprintf("\t%s *%s\n", f.Name, f.Type)
-	}
+	for len(exploration_queue) > 0 {
+		next_type := exploration_queue[0]
+		exploration_queue = exploration_queue[1:]
+		found_types[GoTypeFor(next_type)] = next_type
+		switch next_type.(type) {
+		case ComponentType:
+			for _, field := range next_type.(ComponentType).Fields {
+				exploration_queue = append(exploration_queue, field.Type)
+				exploration_queue = append(exploration_queue, OptionType{field.Type})
+			}
 
-	output += "}\n"
-	return output
-}
+		case ObjectType:
+			for _, field := range next_type.(ObjectType).Fields {
+				exploration_queue = append(exploration_queue, field.Type)
+			}
 
-func GenerateApplyUpdate(t SchemaType) string {
-	output := ""
-	output += fmt.Sprintf("func Apply%sUpdate(data %s, update %sUpdate)  {\n", t.Name, t.Name, t.Name)
+		case ListType:
+			exploration_queue = append(exploration_queue, next_type.(ListType).Type)
 
-	for _, f := range t.Fields {
-		output += fmt.Sprintf("\tif update.%s != nil {\n", f.Name)
-		output += fmt.Sprintf("\t\tdata.%s = *update.%s\n", f.Name, f.Name)
-		output += "\t}\n"
-	}
+		case MapType:
+			exploration_queue = append(exploration_queue, next_type.(MapType).KeyType)
+			exploration_queue = append(exploration_queue, next_type.(MapType).ValueType)
 
-	output += "}\n"
-	return output
-}
-
-func GenerateUpdateWriter(t SchemaType) string {
-	output := ""
-	output += fmt.Sprintf("func Write%sUpdate(output example.Schema_Object, update %sUpdate) {\n", t.Name, t.Name)
-	for _, f := range t.Fields {
-		output += fmt.Sprintf("\tif update.%s != nil {\n", f.Name)
-		output += GenerateFieldWriter("\t\t", f, "*update."+f.Name)
-		output += "\t}\n"
-	}
-	output += "}\n"
-	return output
-}
-
-func GenerateFieldUpdateReader(field SchemaField) string {
-	output := ""
-	if field.Type == "float64" {
-		output += fmt.Sprintf("\tif example.Schema_GetDoubleCount(input, %d) > 0 {\n", field.Id)
-	} else {
-		output += fmt.Sprintf("\tif example.Schema_GetObjectCount(input, %d) > 0 {\n", field.Id)
-	}
-	output += GenerateFieldReader("\t\tvalue := ", field)
-	output += fmt.Sprintf("\t\tresult.%s = &value\n", field.Name)
-	output += "\t}\n"
-	return output
-}
-
-func GenerateFieldReader(prefix string, field SchemaField) string {
-	if field.Type == "float64" {
-		return fmt.Sprintf("%sexample.Schema_GetDouble(input, %d)\n", prefix, field.Id)
-	} else {
-		return fmt.Sprintf("%sRead%s(example.Schema_GetObject(input, %d))\n", prefix, field.Type, field.Id)
-	}
-}
-
-func GenerateFieldWriter(prefix string, field SchemaField, value string) string {
-	if field.Type == "float64" {
-		return fmt.Sprintf("%sexample.Schema_AddDouble(output, %d, %s)\n", prefix, field.Id, value)
-	} else {
-		a := fmt.Sprintf("%sexample.Schema_AddObject(output, %d)\n", prefix, field.Id)
-		b := fmt.Sprintf("%sWrite%s(example.Schema_GetObject(output, %d), %s)\n", prefix, field.Type, field.Id, value)
-		return a + b
-	}
-}
-
-func GenerateUpdateReader(t SchemaType) string {
-	output := ""
-	output += fmt.Sprintf("func Read%sUpdate(input example.Schema_Object) %sUpdate {\n", t.Name, t.Name)
-	output += fmt.Sprintf("\tresult := %sUpdate{}\n", t.Name)
-
-	for _, f := range t.Fields {
-		output += GenerateFieldUpdateReader(f)
-	}
-	output += "\treturn result\n"
-	output += "}\n"
-	return output
-}
-
-func GenerateReader(t SchemaType) string {
-	output := ""
-	output += fmt.Sprintf("func Read%s(input example.Schema_Object) %s {\n", t.Name, t.Name)
-	output += fmt.Sprintf("\treturn %s {\n", t.Name)
-	for _, f := range t.Fields {
-		output += GenerateFieldReader(fmt.Sprintf("\t\t%s : ", f.Name), f)
-	}
-	output += "\t}\n"
-	output += "}\n"
-	return output
-}
-
-func GenerateWriter(t SchemaType) string {
-	output := ""
-	output += fmt.Sprintf("func Write%s(output example.Schema_Object, value %s) {\n", t.Name, t.Name)
-	for _, f := range t.Fields {
-		output += GenerateFieldWriter("\t", f, "value."+f.Name)
-	}
-	output += "}\n"
-	return output
-}
-
-func EnumerateTypes(components []ComponentType) []interface{} {
-	found_types := map[interface{}]bool{}
-
-	for _, component := range(components) {
-		found_types[component.Data] = true
-		for _, field := range(component.Data.Fields) {
-			found_types[field] = true
-			found_types[OptionType{field}] = true
+		case OptionType:
+			exploration_queue = append(exploration_queue, next_type.(OptionType).Type)
 		}
 	}
 
-	result := []interface{}
-	for _, found_type := range(found_types) {
+	result := []interface{}{}
+	for _, found_type := range (found_types) {
 		result = append(result, found_type)
 	}
 
 	return result
 }
 
+func GenerateMethodsForTypes(types []interface{}) string {
+	result := ""
+	for _, typ := range types {
+		switch typ.(type) {
+		case ComponentType:
+			component_type := typ.(ComponentType)
+			result += GenerateComponentType(component_type)
+			result += GenerateComponentUpdateType(component_type)
+			result += GenerateReadComponentType(component_type)
+			result += GenerateWriteComponentType(component_type)
+			result += GenerateReadComponentUpdateType(component_type)
+			result += GenerateWriteComponentUpdateType(component_type)
+			result += GenerateComponentEventCallbacks(component_type)
+			result += GenerateAddComponentDispatcherMethod(component_type)
+			result += GenerateUpdateComponentDispatcherMethod(component_type)
+			result += GenerateAuthorityComponentDispatcherMethod(component_type)
+			result += GenerateRemoveComponentDispatcherMethod(component_type)
+			result += GenerateUpdateComponentConnectionMethod(component_type)
+
+		case EnumType:
+			enum_type := typ.(EnumType)
+			result += GenerateEnumType(enum_type)
+			result += GenerateReadEnumType(enum_type)
+			result += GenerateWriteEnumType(enum_type)
+
+		case ObjectType:
+			object_type := typ.(ObjectType)
+			result += GenerateObjectType(object_type)
+			result += GenerateReadObjectType(object_type)
+			result += GenerateWriteObjectType(object_type)
+
+		case ListType:
+			list_type := typ.(ListType)
+			result += GenerateReadListType(list_type)
+			result += GenerateWriteListType(list_type)
+
+		case MapType:
+			map_type := typ.(MapType)
+			result += GenerateReadMapType(map_type)
+			result += GenerateWriteMapType(map_type)
+
+		case OptionType:
+			option_type := typ.(OptionType)
+			result += GenerateReadOptionType(option_type)
+			result += GenerateWriteOptionType(option_type)
+
+		default:
+		}
+	}
+	return result
+}
+
 func main() {
-	positionFields := []SchemaField{{Name: "Coords", Type: ObjectType{Name:"Coordinates"}, Id: 1}}
-	positionType := SchemaType{Package: "", Name: "Position", Fields: positionFields}
-	positionComponenType := ComponentType{Package: "", Name: "Position", Data:positionType, Id:54}
-	coordinatesFields := []SchemaField{{Name: "X", Type: PrimitiveType{Name:"double"}, Id: 1}, {Name: "Y", Type: PrimitiveType{Name:"double"}, Id: 2}, {Name: "Z", Type: PrimitiveType{Name:"double"}, Id: 3}}
-	coordinatesType := SchemaType{Package: "", Name: "Coordinates", Fields: coordinatesFields}
+	coordinatesFields := []SchemaField{{Name: "X", Type: PrimitiveType{Name: "double"}, Id: 1}, {Name: "Y", Type: PrimitiveType{Name: "double"}, Id: 2}, {Name: "Z", Type: PrimitiveType{Name: "double"}, Id: 3}}
+	coordinatesType := ObjectType{Package: "", Name: "Coordinates", Fields: coordinatesFields}
 
-	attributeSetType := SchemaType{Package:"", Name:"WorkerAttributeSet ", Fields:[]SchemaField{{Name: "attribute", Type: ListType{Type:PrimitiveType{"string"}}, Id: 1}}}
-	requirementSetType := SchemaType{Package:"", Name:"WorkerRequirementSet ", Fields:[]SchemaField{{Name: "attribute_set", Type: ListType{Type:ObjectType{"WorkerAttributeSet"}}, Id: 1}}}
-	aclFields := []SchemaField{{Name:"Read", Type:ListType{Type:ObjectType{"WorkerRequirementSet"}},Id:1},
-	{Name:"Write", Type:MapType{KeyType:PrimitiveType{Name:"uint32"},ValueType:ListType{Type:ObjectType{"WorkerRequirementSet"}}}, Id:2}}
-	aclComponentType := ComponentType{Package:"", Name:"EntityAcl", Data:SchemaType{Package:"", Name:"EntityAcl", Fields:aclFields}, Id:50}
+	positionFields := []SchemaField{{Name: "Coords", Type: coordinatesType, Id: 1}}
+	positionComponentType := ComponentType{Package: "", Name: "Position", Fields: positionFields, Id: 54}
 
+	attributeSetType := ObjectType{Package: "", Name: "WorkerAttributeSet ", Fields: []SchemaField{{Name: "attribute", Type: ListType{Type: PrimitiveType{"string"}}, Id: 1}}}
+	requirementSetType := ObjectType{Package: "", Name: "WorkerRequirementSet ", Fields: []SchemaField{{Name: "attribute_set", Type: ListType{attributeSetType}, Id: 1}}}
+	aclFields := []SchemaField{
+		{Name: "Read", Type: ListType{requirementSetType}, Id: 1},
+		{Name: "Write", Type: MapType{KeyType: PrimitiveType{Name: "uint32"}, ValueType: ListType{requirementSetType}}, Id: 2},
+	}
+	aclComponentType := ComponentType{Package: "", Name: "EntityAcl", Fields: aclFields, Id: 50}
 
+	testEnum := EnumType{Name: "Color", values: map[int]string{1: "Blue", 2: "Red"}}
 
-	testEnum := EnumType{Name:"Color", values:map[int]string{1 : "Blue", 2 : "Red"}}
+	all_types := TraverseTypeDependencies([]interface{}{positionComponentType, aclComponentType, testEnum})
 
-	fmt.Println("package main")
+	TranslateFiles()
 
-
-	fmt.Print(GenerateObjectType(attributeSetType))
-	fmt.Print(GenerateObjectType(requirementSetType))
-	fmt.Print(GenerateObjectType(coordinatesType))
-	fmt.Println(GenerateReadObjectType(attributeSetType))
-	fmt.Println(GenerateWriteObjectType(attributeSetType))
-	fmt.Println(GenerateReadObjectType(requirementSetType))
-	fmt.Println(GenerateWriteObjectType(requirementSetType))
-	fmt.Println(GenerateReadObjectType(coordinatesType))
-	fmt.Println(GenerateWriteObjectType(coordinatesType))
-	fmt.Println(GenerateReadObjectType(positionType))
-	fmt.Println(GenerateWriteObjectType(positionType))
-
-	fmt.Println(GenerateReadListType(ListType{Type:PrimitiveType{Name:"string"}}))
-	fmt.Println(GenerateWriteListType(ListType{Type:PrimitiveType{Name:"string"}}))
-
-	fmt.Println(GenerateReadListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
-	fmt.Println(GenerateWriteListType(ListType{Type:ObjectType{"WorkerAttributeSet"}}))
-
-	fmt.Println(GenerateReadListType(aclFields[0].Type.(ListType)))
-	fmt.Println(GenerateWriteListType(aclFields[0].Type.(ListType)))
-	fmt.Print(GenerateReadOptionType(OptionType{aclFields[0].Type}))
-	fmt.Print(GenerateWriteOptionType(OptionType{aclFields[0].Type}))
-
-	fmt.Println(GenerateReadMapType(aclFields[1].Type.(MapType)))
-	fmt.Println(GenerateWriteMapType(aclFields[1].Type.(MapType)))
-	fmt.Print(GenerateReadOptionType(OptionType{aclFields[1].Type}))
-	fmt.Print(GenerateWriteOptionType(OptionType{aclFields[1].Type}))
-
-	fmt.Println(GenerateEnumType(testEnum))
-	fmt.Println(GenerateReadEnumType(testEnum))
-	fmt.Println(GenerateWriteEnumType(testEnum))
-	fmt.Println(GenerateReadListType(ListType{Type:testEnum}))
-	fmt.Println(GenerateWriteListType(ListType{Type:testEnum}))
-
-	fmt.Println(GenerateComponentType(positionComponenType))
-	fmt.Println(GenerateComponentUpdateType(positionComponenType))
-	fmt.Println(GenerateReadComponentType(positionComponenType))
-	fmt.Println(GenerateWriteComponentType(positionComponenType))
-	fmt.Println(GenerateReadComponentUpdateType(positionComponenType))
-	fmt.Println(GenerateWriteComponentUpdateType(positionComponenType))
-	fmt.Println(GenerateComponentEventCallbacks(positionComponenType))
-	fmt.Println(GenerateAddComponentDispatcherMethod(positionComponenType))
-	fmt.Println(GenerateUpdateComponentDispatcherMethod(positionComponenType))
-	fmt.Println(GenerateAuthorityComponentDispatcherMethod(positionComponenType))
-	fmt.Println(GenerateRemoveComponentDispatcherMethod(positionComponenType))
-	fmt.Println(GenerateUpdateComponentConnectionMethod(positionComponenType))
-
-	fmt.Println(GenerateComponentType(aclComponentType))
-	fmt.Println(GenerateComponentUpdateType(aclComponentType))
-	fmt.Println(GenerateReadComponentType(aclComponentType))
-	fmt.Println(GenerateWriteComponentType(aclComponentType))
-	fmt.Println(GenerateReadComponentUpdateType(aclComponentType))
-	fmt.Println(GenerateWriteComponentUpdateType(aclComponentType))
-	fmt.Println(GenerateComponentEventCallbacks(aclComponentType))
-	fmt.Println(GenerateAddComponentDispatcherMethod(aclComponentType))
-	fmt.Println(GenerateUpdateComponentDispatcherMethod(aclComponentType))
-	fmt.Println(GenerateAuthorityComponentDispatcherMethod(aclComponentType))
-	fmt.Println(GenerateRemoveComponentDispatcherMethod(aclComponentType))
-	fmt.Println(GenerateUpdateComponentConnectionMethod(aclComponentType))
-
-
-	fmt.Println(GenerateReadOptionType(OptionType{Type:ObjectType{"Coordinates"}}))
-	fmt.Println(GenerateWriteOptionType(OptionType{Type:ObjectType{"Coordinates"}}))
-
+	ioutil.WriteFile("output.go.generated", []byte("package main\n\n" +GenerateMethodsForTypes(all_types)), 0644)
 }

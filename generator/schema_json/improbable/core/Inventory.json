@@ -1,0 +1,60 @@
+{
+ "sourceReference": {
+  "line": 1,
+  "column": 1
+ },
+ "completePath": "D:\\Projects\\WizardsTutorial\\schema\\improbable\\core\\Inventory.schema",
+ "canonicalName": "improbable/core/Inventory.schema",
+ "package": "improbable.core",
+ "imports": [],
+ "enumDefinitions": [],
+ "typeDefinitions": [
+  {
+   "sourceReference": {
+    "line": 5,
+    "column": 3
+   },
+   "name": "InventoryData",
+   "qualifiedName": "improbable.core.InventoryData",
+   "enumDefinitions": [],
+   "typeDefinitions": [],
+   "fieldDefinitions": [
+    {
+     "sourceReference": {
+      "line": 5,
+      "column": 3
+     },
+     "name": "resources",
+     "number": 1,
+     "singularType": {
+      "sourceReference": {
+       "line": 5,
+       "column": 3
+      },
+      "builtInType": "int32"
+     }
+    }
+   ]
+  }
+ ],
+ "componentDefinitions": [
+  {
+   "sourceReference": {
+    "line": 3,
+    "column": 1
+   },
+   "name": "Inventory",
+   "qualifiedName": "improbable.core.Inventory",
+   "id": 1004,
+   "dataDefinition": {
+    "sourceReference": {
+     "line": 5,
+     "column": 3
+    },
+    "userType": "improbable.core.InventoryData"
+   },
+   "eventDefinitions": [],
+   "commandDefinitions": []
+  }
+ ]
+}
