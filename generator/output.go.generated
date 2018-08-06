@@ -1,15 +1,98 @@
 package main
 
-func ReadOption_Object_Coordinates(object example.Schema_Object, field uint, index uint) *Coordinates {
+type Position struct {
+	Coords Coordinates
+}
+type PositionUpdate struct {
+	Coords *Coordinates
+}
+func ReadComponent_Position(object example.Schema_Object) Position {
+	return Position {
+		Coords : ReadObject_Coordinates(object, 1, 0),
+	}
+}
+func WriteComponent_Position(object example.Schema_Object, value Position) {
+	WriteObject_Coordinates(object, 1, value.Coords)
+}
+func ReadComponentUpdate_Position(object example.Schema_Object) PositionUpdate {
+	return PositionUpdate {
+		Coords : ReadOption_Object_Coordinates(object, 1, 0),
+	}
+}
+func WriteComponentUpdate_Position(object example.Schema_Object, value PositionUpdate) {
+	WriteOption_Object_Coordinates(object, 1, value.Coords)
+}
+type PositionAddedCallback func(entity_id int64, data Position)
+type PositionUpdatedCallback func(entity_id int64, update PositionUpdate)
+func (dispatcher *Dispatcher) OnPositionAdded(callback PositionAddedCallback) {
+	component_id := uint(54)
+	inner_callback := func(entity_id int64, component_data example.Worker_ComponentData) {
+		data_fields := example.Schema_GetComponentDataFields(component_data.GetSchema_type())
+		component := ReadComponent_Position(data_fields)
+		callback(entity_id, component)
+	}
+	dispatcher.OnComponentAdded(component_id, inner_callback)
+}
+func (dispatcher *Dispatcher) OnPositionUpdated(callback PositionUpdatedCallback) {
+	component_id := uint(54)
+	inner_callback := func(entity_id int64, component_update example.Worker_ComponentUpdate) {
+		data_fields := example.Schema_GetComponentUpdateFields(component_update.GetSchema_type())
+		component := ReadComponentUpdate_Position(data_fields)
+		callback(entity_id, component)
+	}
+	dispatcher.OnComponentUpdated(component_id, inner_callback)
+}
+func (dispatcher *Dispatcher) OnPositionAuthority(callback ComponentAuthorityCallback) {
+	component_id := uint(54)
+	dispatcher.OnComponentAuthority(component_id, callback)
+}
+func (dispatcher *Dispatcher) OnPositionRemoved(callback ComponentRemovedCallback) {
+	component_id := uint(54)
+	dispatcher.OnComponentRemoved(component_id, callback)
+}
+func (connection Connection) SendPositionUpdate(entity_id int64, value PositionUpdate) {
+	component_id := uint(54)
+	component_update := example.Schema_CreateComponentUpdate(component_id)
+	component_update_fields := example.Schema_GetComponentUpdateFields(component_update)
+	WriteComponentUpdate_Position(component_update_fields, value)
+	connection.SendComponentUpdate(entity_id, component_id, component_update)
+}
+func ReadOption_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) *[]WorkerRequirementSet  {
 	if example.Schema_GetObjectCount(object, field) > 0 {
-		result := ReadObject_Coordinates(object, field, index)
+		result := ReadList_Object_WorkerRequirementSet (object, field, index)
 		return &result
 	}
 	return nil
 }
-func WriteOption_Object_Coordinates(object example.Schema_Object, field uint, value *Coordinates) {
+func WriteOption_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value *[]WorkerRequirementSet ) {
 	if value != nil {
-		WriteObject_Coordinates(object, field, *value)
+		WriteList_Object_WorkerRequirementSet (object, field, *value)
+	}
+}
+type WorkerRequirementSet  struct {
+	attribute_set []WorkerAttributeSet 
+}
+func ReadObject_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) WorkerRequirementSet  {
+	innerObject := example.Schema_IndexObject(object, field, index)
+	return WorkerRequirementSet  {
+		attribute_set : ReadList_Object_WorkerAttributeSet (innerObject, 1, 0),
+	}
+}
+func WriteObject_WorkerRequirementSet (object example.Schema_Object, field uint, value WorkerRequirementSet ) {
+	innerObject := example.Schema_AddObject(object, field)
+	WriteList_Object_WorkerAttributeSet (innerObject, 1, value.attribute_set)
+}
+func ReadList_Object_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) []WorkerAttributeSet  {
+	count := example.Schema_GetObjectCount(object, field)
+	result := []WorkerAttributeSet {}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadObject_WorkerAttributeSet (object, field, i))
+	}
+	return result
+}
+func WriteList_Object_WorkerAttributeSet (object example.Schema_Object, field uint, value []WorkerAttributeSet ) {
+	for _, i := range(value) {
+		WriteObject_WorkerAttributeSet (object, field, i)
 	}
 }
 func ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) map[uint][]WorkerRequirementSet  {
@@ -54,19 +137,6 @@ func ReadEnum_Color(object example.Schema_Object, field uint, index uint) Color 
 func WriteEnum_Color(object example.Schema_Object, field uint, value Color) {
 	example.Schema_AddEnum(object, field, uint(value))
 }
-func ReadList_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) []WorkerRequirementSet  {
-	count := example.Schema_GetObjectCount(object, field)
-	result := []WorkerRequirementSet {}
-	for i := uint(0); i < count; i++ {
-		result = append(result, ReadObject_WorkerRequirementSet (object, field, i))
-	}
-	return result
-}
-func WriteList_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value []WorkerRequirementSet ) {
-	for _, i := range(value) {
-		WriteObject_WorkerRequirementSet (object, field, i)
-	}
-}
 type Coordinates struct {
 	X float64
 	Y float64
@@ -86,19 +156,6 @@ func WriteObject_Coordinates(object example.Schema_Object, field uint, value Coo
 	WritePrimitive_double(innerObject, 2, value.Y)
 	WritePrimitive_double(innerObject, 3, value.Z)
 }
-type WorkerRequirementSet  struct {
-	attribute_set []WorkerAttributeSet 
-}
-func ReadObject_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) WorkerRequirementSet  {
-	innerObject := example.Schema_IndexObject(object, field, index)
-	return WorkerRequirementSet  {
-		attribute_set : ReadList_Object_WorkerAttributeSet (innerObject, 1, 0),
-	}
-}
-func WriteObject_WorkerRequirementSet (object example.Schema_Object, field uint, value WorkerRequirementSet ) {
-	innerObject := example.Schema_AddObject(object, field)
-	WriteList_Object_WorkerAttributeSet (innerObject, 1, value.attribute_set)
-}
 type WorkerAttributeSet  struct {
 	attribute []string
 }
@@ -111,19 +168,6 @@ func ReadObject_WorkerAttributeSet (object example.Schema_Object, field uint, in
 func WriteObject_WorkerAttributeSet (object example.Schema_Object, field uint, value WorkerAttributeSet ) {
 	innerObject := example.Schema_AddObject(object, field)
 	WriteList_Primitive_string(innerObject, 1, value.attribute)
-}
-func ReadList_Primitive_string(object example.Schema_Object, field uint, index uint) []string {
-	count := example.Schema_GetBytesCount(object, field)
-	result := []string{}
-	for i := uint(0); i < count; i++ {
-		result = append(result, ReadPrimitive_string(object, field, i))
-	}
-	return result
-}
-func WriteList_Primitive_string(object example.Schema_Object, field uint, value []string) {
-	for _, i := range(value) {
-		WritePrimitive_string(object, field, i)
-	}
 }
 type EntityAcl struct {
 	Read []WorkerRequirementSet 
@@ -188,85 +232,41 @@ func (connection Connection) SendEntityAclUpdate(entity_id int64, value EntityAc
 	WriteComponentUpdate_EntityAcl(component_update_fields, value)
 	connection.SendComponentUpdate(entity_id, component_id, component_update)
 }
-func ReadOption_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) *[]WorkerRequirementSet  {
+func ReadOption_Object_Coordinates(object example.Schema_Object, field uint, index uint) *Coordinates {
 	if example.Schema_GetObjectCount(object, field) > 0 {
-		result := ReadList_Object_WorkerRequirementSet (object, field, index)
+		result := ReadObject_Coordinates(object, field, index)
 		return &result
 	}
 	return nil
 }
-func WriteOption_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value *[]WorkerRequirementSet ) {
+func WriteOption_Object_Coordinates(object example.Schema_Object, field uint, value *Coordinates) {
 	if value != nil {
-		WriteList_Object_WorkerRequirementSet (object, field, *value)
+		WriteObject_Coordinates(object, field, *value)
 	}
 }
-func ReadList_Object_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) []WorkerAttributeSet  {
+func ReadList_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) []WorkerRequirementSet  {
 	count := example.Schema_GetObjectCount(object, field)
-	result := []WorkerAttributeSet {}
+	result := []WorkerRequirementSet {}
 	for i := uint(0); i < count; i++ {
-		result = append(result, ReadObject_WorkerAttributeSet (object, field, i))
+		result = append(result, ReadObject_WorkerRequirementSet (object, field, i))
 	}
 	return result
 }
-func WriteList_Object_WorkerAttributeSet (object example.Schema_Object, field uint, value []WorkerAttributeSet ) {
+func WriteList_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value []WorkerRequirementSet ) {
 	for _, i := range(value) {
-		WriteObject_WorkerAttributeSet (object, field, i)
+		WriteObject_WorkerRequirementSet (object, field, i)
 	}
 }
-type Position struct {
-	Coords Coordinates
-}
-type PositionUpdate struct {
-	Coords *Coordinates
-}
-func ReadComponent_Position(object example.Schema_Object) Position {
-	return Position {
-		Coords : ReadObject_Coordinates(object, 1, 0),
+func ReadList_Primitive_string(object example.Schema_Object, field uint, index uint) []string {
+	count := example.Schema_GetBytesCount(object, field)
+	result := []string{}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadPrimitive_string(object, field, i))
 	}
+	return result
 }
-func WriteComponent_Position(object example.Schema_Object, value Position) {
-	WriteObject_Coordinates(object, 1, value.Coords)
-}
-func ReadComponentUpdate_Position(object example.Schema_Object) PositionUpdate {
-	return PositionUpdate {
-		Coords : ReadOption_Object_Coordinates(object, 1, 0),
+func WriteList_Primitive_string(object example.Schema_Object, field uint, value []string) {
+	for _, i := range(value) {
+		WritePrimitive_string(object, field, i)
 	}
-}
-func WriteComponentUpdate_Position(object example.Schema_Object, value PositionUpdate) {
-	WriteOption_Object_Coordinates(object, 1, value.Coords)
-}
-type PositionAddedCallback func(entity_id int64, data Position)
-type PositionUpdatedCallback func(entity_id int64, update PositionUpdate)
-func (dispatcher *Dispatcher) OnPositionAdded(callback PositionAddedCallback) {
-	component_id := uint(54)
-	inner_callback := func(entity_id int64, component_data example.Worker_ComponentData) {
-		data_fields := example.Schema_GetComponentDataFields(component_data.GetSchema_type())
-		component := ReadComponent_Position(data_fields)
-		callback(entity_id, component)
-	}
-	dispatcher.OnComponentAdded(component_id, inner_callback)
-}
-func (dispatcher *Dispatcher) OnPositionUpdated(callback PositionUpdatedCallback) {
-	component_id := uint(54)
-	inner_callback := func(entity_id int64, component_update example.Worker_ComponentUpdate) {
-		data_fields := example.Schema_GetComponentUpdateFields(component_update.GetSchema_type())
-		component := ReadComponentUpdate_Position(data_fields)
-		callback(entity_id, component)
-	}
-	dispatcher.OnComponentUpdated(component_id, inner_callback)
-}
-func (dispatcher *Dispatcher) OnPositionAuthority(callback ComponentAuthorityCallback) {
-	component_id := uint(54)
-	dispatcher.OnComponentAuthority(component_id, callback)
-}
-func (dispatcher *Dispatcher) OnPositionRemoved(callback ComponentRemovedCallback) {
-	component_id := uint(54)
-	dispatcher.OnComponentRemoved(component_id, callback)
-}
-func (connection Connection) SendPositionUpdate(entity_id int64, value PositionUpdate) {
-	component_id := uint(54)
-	component_update := example.Schema_CreateComponentUpdate(component_id)
-	component_update_fields := example.Schema_GetComponentUpdateFields(component_update)
-	WriteComponentUpdate_Position(component_update_fields, value)
-	connection.SendComponentUpdate(entity_id, component_id, component_update)
 }

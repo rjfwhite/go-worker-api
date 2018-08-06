@@ -31,16 +31,35 @@ type ParsedType struct {
 	Id int
 }
 
+func ParseField(json *gabs.Container) SchemaField {
+	field := SchemaField{}
+	field.Name = json.Path("name").Data().(string)
+	field.Id = int(json.Path("number").Data().(float64))
+
+
+	if json.Exists("singularType") {
+
+		singular_json := json.Path("singularType")
+
+		if singular_json.Exists("userType") {
+			field.Type = singular_json.Path("userType").Data().(string)
+		} else if singular_json.Exists("builtInType") {
+			field.Type = PrimitiveType{singular_json.Path("builtInType").Data().(string)}
+		} else {
+			field.Type = "UNKNOWN SINGULAR"
+		}
+	}
+
+	return field
+}
+
 func EnumerateTypeDefinitions(type_json *gabs.Container, type_list *map[string]ParsedType) {
 
 	parsed_type := ParsedType{}
 	field_definitions, _ := type_json.Path("fieldDefinitions").Children()
 	fields := []SchemaField{}
 	for _, field_definition := range(field_definitions) {
-		field := SchemaField{}
-		field.Name = field_definition.Path("name").Data().(string)
-		field.Id = int(field_definition.Path("number").Data().(float64))
-		fields = append(fields, field)
+		fields = append(fields, ParseField(field_definition))
 	}
 	parsed_type.Name = type_json.Path("qualifiedName").String()
 	parsed_type.Fields = fields
