@@ -27,12 +27,12 @@ func EnumerateComponentsToDataTypes(jsons []*gabs.Container) map[string]string {
 
 type ParsedType struct {
 	Name string
-	Fields []SchemaField
+	Fields []FieldDefinition
 	Id int
 }
 
-func ParseField(json *gabs.Container) SchemaField {
-	field := SchemaField{}
+func ParseField(json *gabs.Container) FieldDefinition {
+	field := FieldDefinition{}
 	field.Name = json.Path("name").Data().(string)
 	field.Id = int(json.Path("number").Data().(float64))
 
@@ -57,7 +57,7 @@ func EnumerateTypeDefinitions(type_json *gabs.Container, type_list *map[string]P
 
 	parsed_type := ParsedType{}
 	field_definitions, _ := type_json.Path("fieldDefinitions").Children()
-	fields := []SchemaField{}
+	fields := []FieldDefinition{}
 	for _, field_definition := range(field_definitions) {
 		fields = append(fields, ParseField(field_definition))
 	}

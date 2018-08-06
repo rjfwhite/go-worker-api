@@ -4,28 +4,28 @@ import (
 	"fmt"
 )
 
-func GenerateEnumType(t EnumType) string {
+func GenerateEnumType(t EnumDefinition) string {
 	output := ""
-	output += fmt.Sprintf("type %s uint\n\n", t.Name)
+	output += fmt.Sprintf("type %s uint\n\n", t.Type.Name)
 	output += "const (\n"
 	for number, value := range (t.values) {
-		output += fmt.Sprintf("\t%s %s = %d\n", value, t.Name, number)
+		output += fmt.Sprintf("\t%s %s = %d\n", value, t.Type.Name, number)
 	}
 	output += ")\n"
 	return output
 }
 
-func GenerateReadEnumType(t EnumType) string {
+func GenerateReadEnumType(t EnumDefinition) string {
 	output := ""
-	output += fmt.Sprintf("func Read%s(object example.Schema_Object, field uint, index uint) %s {\n", MethodSuffixForType(t), GoTypeFor(t))
-	output += fmt.Sprintf("\treturn %s(example.Schema_IndexEnum(object, field, index))\n", t.Name)
+	output += fmt.Sprintf("func Read%s(object example.Schema_Object, field uint, index uint) %s {\n", MethodSuffixForType(t.Type), GoTypeFor(t.Type))
+	output += fmt.Sprintf("\treturn %s(example.Schema_IndexEnum(object, field, index))\n", t.Type.Name)
 	output += "}\n"
 	return output
 }
 
-func GenerateWriteEnumType(t EnumType) string {
+func GenerateWriteEnumType(t EnumDefinition) string {
 	output := ""
-	output += fmt.Sprintf("func Write%s(object example.Schema_Object, field uint, value %s) {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += fmt.Sprintf("func Write%s(object example.Schema_Object, field uint, value %s) {\n", MethodSuffixForType(t.Type), GoTypeFor(t.Type))
 	output += "\texample.Schema_AddEnum(object, field, uint(value))\n"
 	output += "}\n"
 	return output

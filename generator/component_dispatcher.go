@@ -14,22 +14,22 @@ func (dispatcher *Dispatcher) OnPositionAdded(callback PositionAddedCallback) {
 }
 }*/
 
-func GenerateComponentEventCallbacks(t ComponentType) string {
+func GenerateComponentEventCallbacks(t ComponentDefinition) string {
 	output := ""
-	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Name, GoTypeFor(t))
-	output += fmt.Sprintf("type %sUpdatedCallback func(entity_id int64, update %s)\n", t.Name, GoTypeFor(t) + "Update")
+	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Type.Name, GoTypeFor(t.Type))
+	output += fmt.Sprintf("type %sUpdatedCallback func(entity_id int64, update %s)\n", t.Type.Name, GoTypeFor(t.Type) + "Update")
 	return output
 }
 
 // Creates a typed wrapper around the normal dispatcher method
 // enabling syntax like 'dispatcher.OnFooAdded(callback)'
-func GenerateAddComponentDispatcherMethod(t ComponentType) string {
+func GenerateAddComponentDispatcherMethod(t ComponentDefinition) string {
 	output := ""
-	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sAdded(callback %sAddedCallback) {\n", t.Name, t.Name)
+	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sAdded(callback %sAddedCallback) {\n", t.Type.Name, t.Type.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
 	output += "\tinner_callback := func(entity_id int64, component_data example.Worker_ComponentData) {\n"
 	output += "\t\tdata_fields := example.Schema_GetComponentDataFields(component_data.GetSchema_type())\n"
-	output += fmt.Sprintf("\t\tcomponent := ReadComponent_%s(data_fields)\n", t.Name)
+	output += fmt.Sprintf("\t\tcomponent := ReadComponent_%s(data_fields)\n", t.Type.Name)
 	output += "\t\tcallback(entity_id, component)\n"
 	output += "\t}\n"
 	output += "\tdispatcher.OnComponentAdded(component_id, inner_callback)\n"
@@ -37,13 +37,13 @@ func GenerateAddComponentDispatcherMethod(t ComponentType) string {
 	return output
 }
 
-func GenerateUpdateComponentDispatcherMethod(t ComponentType) string {
+func GenerateUpdateComponentDispatcherMethod(t ComponentDefinition) string {
 	output := ""
-	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sUpdated(callback %sUpdatedCallback) {\n", t.Name, t.Name)
+	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sUpdated(callback %sUpdatedCallback) {\n", t.Type.Name, t.Type.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
 	output += "\tinner_callback := func(entity_id int64, component_update example.Worker_ComponentUpdate) {\n"
 	output += "\t\tdata_fields := example.Schema_GetComponentUpdateFields(component_update.GetSchema_type())\n"
-	output += fmt.Sprintf("\t\tcomponent := ReadComponentUpdate_%s(data_fields)\n", t.Name)
+	output += fmt.Sprintf("\t\tcomponent := ReadComponentUpdate_%s(data_fields)\n", t.Type.Name)
 	output += "\t\tcallback(entity_id, component)\n"
 	output += "\t}\n"
 	output += "\tdispatcher.OnComponentUpdated(component_id, inner_callback)\n"
@@ -51,18 +51,18 @@ func GenerateUpdateComponentDispatcherMethod(t ComponentType) string {
 	return output
 }
 
-func GenerateAuthorityComponentDispatcherMethod(t ComponentType) string {
+func GenerateAuthorityComponentDispatcherMethod(t ComponentDefinition) string {
 	output := ""
-	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sAuthority(callback ComponentAuthorityCallback) {\n", t.Name)
+	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sAuthority(callback ComponentAuthorityCallback) {\n", t.Type.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
 	output += "\tdispatcher.OnComponentAuthority(component_id, callback)\n"
 	output += "}\n"
 	return output
 }
 
-func GenerateRemoveComponentDispatcherMethod(t ComponentType) string {
+func GenerateRemoveComponentDispatcherMethod(t ComponentDefinition) string {
 	output := ""
-	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sRemoved(callback ComponentRemovedCallback) {\n", t.Name)
+	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sRemoved(callback ComponentRemovedCallback) {\n", t.Type.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
 	output += "\tdispatcher.OnComponentRemoved(component_id, callback)\n"
 	output += "}\n"

@@ -12,7 +12,7 @@ type EntityComponent struct {
 }
 
 func main() {
-	authoritativeComponents := make(map[EntityComponent]bool)
+	authoritativeComponents := map[EntityComponent]bool{}
 
 	connection := MakeConnection()
 	dispatcher := MakeDispatcher()
@@ -39,7 +39,7 @@ func main() {
 		})
 
 		dispatcher.OnPositionUpdated(func(entity_id int64, update PositionUpdate) {
-			//fmt.Printf("GOT POSUP %d\n", entity_id, update.Coords.X, update.Coords.Y, update.Coords.Z)
+			fmt.Printf("GOT POS %d\n", entity_id, update.Coords.X, update.Coords.Y, update.Coords.Z)
 		})
 
 		for connection.IsConnected() {
