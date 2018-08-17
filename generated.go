@@ -33,6 +33,7 @@ func WriteObject_Coordinates(object example.Schema_Object, field uint, value Coo
 	WritePrimitive_double(innerObject, 2, value.Y)
 	WritePrimitive_double(innerObject, 3, value.Z)
 }
+
 func ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) map[uint][]WorkerRequirementSet  {
 	count := example.Schema_GetObjectCount(object, field)
 	result := map[uint][]WorkerRequirementSet {}
@@ -44,6 +45,7 @@ func ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object exampl
 	}
 	return result
 }
+
 func WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value map[uint][]WorkerRequirementSet ) {
 	for k, v := range(value) {
 		innerObject := example.Schema_AddObject(object, field)
@@ -247,6 +249,7 @@ func (connection Connection) SendEntityAclUpdate(entity_id int64, value EntityAc
 	WriteComponentUpdate_EntityAcl(component_update_fields, value)
 	connection.SendComponentUpdate(entity_id, component_id, component_update)
 }
+
 func ReadOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) *map[uint][]WorkerRequirementSet  {
 	if example.Schema_GetObjectCount(object, field) > 0 {
 		result := ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object, field, index)
@@ -254,6 +257,7 @@ func ReadOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet (object
 	}
 	return nil
 }
+
 func WriteOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value *map[uint][]WorkerRequirementSet ) {
 	if value != nil {
 		WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object, field, *value)

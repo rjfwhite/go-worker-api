@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 )
 
 type ComponentType struct {
@@ -10,6 +11,14 @@ type ComponentType struct {
 	Name    string
 	Fields  []SchemaField
 	Id      uint
+}
+
+type TypeRef struct {
+	Name string
+}
+
+func (t TypeRef) String() string {
+	return fmt.Sprintf("TypeRef(%s)", t.Name)
 }
 
 type SchemaField struct {
@@ -20,6 +29,10 @@ type SchemaField struct {
 
 type PrimitiveType struct {
 	Name string
+}
+
+func (t PrimitiveType) String() string {
+	return fmt.Sprintf("PrimitiveType(%s)", t.Name)
 }
 
 type EnumType struct {
@@ -120,6 +133,7 @@ func FunctionFamilyFor(t interface{}) string {
 	case OptionType:
 		return FunctionFamilyFor(t.(OptionType).Type)
 	}
+	log.Fatal("Could not find function family for ", t)
 	return ""
 }
 
@@ -138,6 +152,7 @@ func MethodSuffixForType(t interface{}) string {
 	case OptionType:
 		return "Option_" + MethodSuffixForType(t.(OptionType).Type)
 	}
+	log.Fatal("Could not find method suffix for ", t)
 	return ""
 }
 

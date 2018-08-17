@@ -31,35 +31,35 @@ type ParsedType struct {
 	Id int
 }
 
-func ParseField(json *gabs.Container) SchemaField {
+func ParseField(json gabs.Container) SchemaField {
 	field := SchemaField{}
 	field.Name = json.Path("name").Data().(string)
 	field.Id = int(json.Path("number").Data().(float64))
-
-
-	if json.Exists("singularType") {
-
-		singular_json := json.Path("singularType")
-
-		if singular_json.Exists("userType") {
-			field.Type = singular_json.Path("userType").Data().(string)
-		} else if singular_json.Exists("builtInType") {
-			field.Type = PrimitiveType{singular_json.Path("builtInType").Data().(string)}
-		} else {
-			field.Type = "UNKNOWN SINGULAR"
-		}
-	}
-
+	field.Type = ParseType(json)
 	return field
 }
 
-func EnumerateTypeDefinitions(type_json *gabs.Container, type_list *map[string]ParsedType) {
+func ParseType(json gabs.Container) interface{} {
+	if json.Exists("singularType") {
+		singular_json := json.Path("singularType")
+		if singular_json.Exists("userType") {
+			return TypeRef{singular_json.Path("userType").Data().(string)}
+		} else if singular_json.Exists("builtInType") {
+			return PrimitiveType{singular_json.Path("builtInType").Data().(string)}
+		} else {
+			return TypeRef{"UNKNOWN"}
+		}
+	}
+	return nil
+}
+
+func EnumerateTypeDefinitions(type_json gabs.Container, type_list *map[string]ParsedType) {
 
 	parsed_type := ParsedType{}
 	field_definitions, _ := type_json.Path("fieldDefinitions").Children()
 	fields := []SchemaField{}
 	for _, field_definition := range(field_definitions) {
-		fields = append(fields, ParseField(field_definition))
+		fields = append(fields, ParseField(*field_definition))
 	}
 	parsed_type.Name = type_json.Path("qualifiedName").String()
 	parsed_type.Fields = fields
@@ -68,16 +68,20 @@ func EnumerateTypeDefinitions(type_json *gabs.Container, type_list *map[string]P
 
 	type_definitions, _ := type_json.Path("typeDefinitions").Children()
 	for _, type_definition := range type_definitions {
-		EnumerateTypeDefinitions(type_definition, type_list)
+		EnumerateTypeDefinitions(*type_definition, type_list)
 	}
 }
 
-func EnumerateTypeDefinitionsInJson(jsons []*gabs.Container) map[string]ParsedType {
+type SchemaJsons struct {
+	Files []*gabs.Container
+}
+
+func EnumerateTypeDefinitionsInJson(schema SchemaJsons) map[string]ParsedType {
 	result := map[string]ParsedType{}
-	for _, json := range jsons {
+	for _, json := range schema.Files {
 		type_definitions, _ := json.Path("typeDefinitions").Children()
 		for _, type_definition := range type_definitions {
-			EnumerateTypeDefinitions(type_definition, &result)
+			EnumerateTypeDefinitions(*type_definition, &result)
 		}
 	}
 	return result
@@ -96,7 +100,9 @@ func TranslateFiles() {
 		return nil
 	})
 
-	type_name_to_type := EnumerateTypeDefinitionsInJson(jsons)
+	schema := SchemaJsons{jsons}
+
+	type_name_to_type := EnumerateTypeDefinitionsInJson(schema)
 	component_name_to_type_name := EnumerateComponentsToDataTypes(jsons)
 
 	for _, defined_type := range type_name_to_type {

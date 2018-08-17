@@ -69,19 +69,6 @@ func WriteOption_List_Object_WorkerRequirementSet (object example.Schema_Object,
 		WriteList_Object_WorkerRequirementSet (object, field, *value)
 	}
 }
-type WorkerRequirementSet  struct {
-	attribute_set []WorkerAttributeSet 
-}
-func ReadObject_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) WorkerRequirementSet  {
-	innerObject := example.Schema_IndexObject(object, field, index)
-	return WorkerRequirementSet  {
-		attribute_set : ReadList_Object_WorkerAttributeSet (innerObject, 1, 0),
-	}
-}
-func WriteObject_WorkerRequirementSet (object example.Schema_Object, field uint, value WorkerRequirementSet ) {
-	innerObject := example.Schema_AddObject(object, field)
-	WriteList_Object_WorkerAttributeSet (innerObject, 1, value.attribute_set)
-}
 func ReadList_Object_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) []WorkerAttributeSet  {
 	count := example.Schema_GetObjectCount(object, field)
 	result := []WorkerAttributeSet {}
@@ -95,36 +82,6 @@ func WriteList_Object_WorkerAttributeSet (object example.Schema_Object, field ui
 		WriteObject_WorkerAttributeSet (object, field, i)
 	}
 }
-func ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) map[uint][]WorkerRequirementSet  {
-	count := example.Schema_GetObjectCount(object, field)
-	result := map[uint][]WorkerRequirementSet {}
-	for i := uint(0); i < count; i++ {
-		innerObject := example.Schema_IndexObject(object, field, i)
-		key := ReadPrimitive_uint32(innerObject, 1, 0)
-		value := ReadList_Object_WorkerRequirementSet (innerObject, 2, 0)
-		result[key] = value
-	}
-	return result
-}
-func WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value map[uint][]WorkerRequirementSet ) {
-	for k, v := range(value) {
-		innerObject := example.Schema_AddObject(object, field)
-		WritePrimitive_uint32(innerObject, 1, k)
-		WriteList_Object_WorkerRequirementSet (innerObject, 2, v)
-	}
-}
-func ReadOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) *map[uint][]WorkerRequirementSet  {
-	if example.Schema_GetObjectCount(object, field) > 0 {
-		result := ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object, field, index)
-		return &result
-	}
-	return nil
-}
-func WriteOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value *map[uint][]WorkerRequirementSet ) {
-	if value != nil {
-		WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object, field, *value)
-	}
-}
 type Color uint
 
 const (
@@ -136,6 +93,45 @@ func ReadEnum_Color(object example.Schema_Object, field uint, index uint) Color 
 }
 func WriteEnum_Color(object example.Schema_Object, field uint, value Color) {
 	example.Schema_AddEnum(object, field, uint(value))
+}
+type WorkerRequirementSet  struct {
+	attribute_set []WorkerAttributeSet 
+}
+func ReadObject_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) WorkerRequirementSet  {
+	innerObject := example.Schema_IndexObject(object, field, index)
+	return WorkerRequirementSet  {
+		attribute_set : ReadList_Object_WorkerAttributeSet (innerObject, 1, 0),
+	}
+}
+func WriteObject_WorkerRequirementSet (object example.Schema_Object, field uint, value WorkerRequirementSet ) {
+	innerObject := example.Schema_AddObject(object, field)
+	WriteList_Object_WorkerAttributeSet (innerObject, 1, value.attribute_set)
+}
+type WorkerAttributeSet  struct {
+	attribute []string
+}
+func ReadObject_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) WorkerAttributeSet  {
+	innerObject := example.Schema_IndexObject(object, field, index)
+	return WorkerAttributeSet  {
+		attribute : ReadList_Primitive_string(innerObject, 1, 0),
+	}
+}
+func WriteObject_WorkerAttributeSet (object example.Schema_Object, field uint, value WorkerAttributeSet ) {
+	innerObject := example.Schema_AddObject(object, field)
+	WriteList_Primitive_string(innerObject, 1, value.attribute)
+}
+func ReadList_Primitive_string(object example.Schema_Object, field uint, index uint) []string {
+	count := example.Schema_GetBytesCount(object, field)
+	result := []string{}
+	for i := uint(0); i < count; i++ {
+		result = append(result, ReadPrimitive_string(object, field, i))
+	}
+	return result
+}
+func WriteList_Primitive_string(object example.Schema_Object, field uint, value []string) {
+	for _, i := range(value) {
+		WritePrimitive_string(object, field, i)
+	}
 }
 type Coordinates struct {
 	X float64
@@ -156,18 +152,29 @@ func WriteObject_Coordinates(object example.Schema_Object, field uint, value Coo
 	WritePrimitive_double(innerObject, 2, value.Y)
 	WritePrimitive_double(innerObject, 3, value.Z)
 }
-type WorkerAttributeSet  struct {
-	attribute []string
+func ReadOption_Object_Coordinates(object example.Schema_Object, field uint, index uint) *Coordinates {
+	if example.Schema_GetObjectCount(object, field) > 0 {
+		result := ReadObject_Coordinates(object, field, index)
+		return &result
+	}
+	return nil
 }
-func ReadObject_WorkerAttributeSet (object example.Schema_Object, field uint, index uint) WorkerAttributeSet  {
-	innerObject := example.Schema_IndexObject(object, field, index)
-	return WorkerAttributeSet  {
-		attribute : ReadList_Primitive_string(innerObject, 1, 0),
+func WriteOption_Object_Coordinates(object example.Schema_Object, field uint, value *Coordinates) {
+	if value != nil {
+		WriteObject_Coordinates(object, field, *value)
 	}
 }
-func WriteObject_WorkerAttributeSet (object example.Schema_Object, field uint, value WorkerAttributeSet ) {
-	innerObject := example.Schema_AddObject(object, field)
-	WriteList_Primitive_string(innerObject, 1, value.attribute)
+func ReadOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) *map[uint][]WorkerRequirementSet  {
+	if example.Schema_GetObjectCount(object, field) > 0 {
+		result := ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object, field, index)
+		return &result
+	}
+	return nil
+}
+func WriteOption_Map_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value *map[uint][]WorkerRequirementSet ) {
+	if value != nil {
+		WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object, field, *value)
+	}
 }
 type EntityAcl struct {
 	Read []WorkerRequirementSet 
@@ -232,18 +239,6 @@ func (connection Connection) SendEntityAclUpdate(entity_id int64, value EntityAc
 	WriteComponentUpdate_EntityAcl(component_update_fields, value)
 	connection.SendComponentUpdate(entity_id, component_id, component_update)
 }
-func ReadOption_Object_Coordinates(object example.Schema_Object, field uint, index uint) *Coordinates {
-	if example.Schema_GetObjectCount(object, field) > 0 {
-		result := ReadObject_Coordinates(object, field, index)
-		return &result
-	}
-	return nil
-}
-func WriteOption_Object_Coordinates(object example.Schema_Object, field uint, value *Coordinates) {
-	if value != nil {
-		WriteObject_Coordinates(object, field, *value)
-	}
-}
 func ReadList_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) []WorkerRequirementSet  {
 	count := example.Schema_GetObjectCount(object, field)
 	result := []WorkerRequirementSet {}
@@ -257,16 +252,21 @@ func WriteList_Object_WorkerRequirementSet (object example.Schema_Object, field 
 		WriteObject_WorkerRequirementSet (object, field, i)
 	}
 }
-func ReadList_Primitive_string(object example.Schema_Object, field uint, index uint) []string {
-	count := example.Schema_GetBytesCount(object, field)
-	result := []string{}
+func ReadMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, index uint) map[uint][]WorkerRequirementSet  {
+	count := example.Schema_GetObjectCount(object, field)
+	result := map[uint][]WorkerRequirementSet {}
 	for i := uint(0); i < count; i++ {
-		result = append(result, ReadPrimitive_string(object, field, i))
+		innerObject := example.Schema_IndexObject(object, field, i)
+		key := ReadPrimitive_uint32(innerObject, 1, 0)
+		value := ReadList_Object_WorkerRequirementSet (innerObject, 2, 0)
+		result[key] = value
 	}
 	return result
 }
-func WriteList_Primitive_string(object example.Schema_Object, field uint, value []string) {
-	for _, i := range(value) {
-		WritePrimitive_string(object, field, i)
+func WriteMap_Primitive_uint32_to_List_Object_WorkerRequirementSet (object example.Schema_Object, field uint, value map[uint][]WorkerRequirementSet ) {
+	for k, v := range(value) {
+		innerObject := example.Schema_AddObject(object, field)
+		WritePrimitive_uint32(innerObject, 1, k)
+		WriteList_Object_WorkerRequirementSet (innerObject, 2, v)
 	}
 }

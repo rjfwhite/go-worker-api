@@ -2,18 +2,6 @@ package main
 
 import "fmt"
 
-/*
-func (dispatcher *Dispatcher) OnPositionAdded(callback PositionAddedCallback) {
-	component_id := uint(54)
-	innerCallback := func(entity_id int64, component_data example.Worker_ComponentData) {
-		dataFields := example.Schema_GetComponentDataFields(component_data.GetSchema_type())
-		component := ReadComponent_Position(dataFields)
-		callback(entity_id, component)
-	}
-	dispatcher.ComponentAddedCallbacks[component_id] = []ComponentAddedCallback{innerCallback}
-}
-}*/
-
 func GenerateComponentEventCallbacks(t ComponentType) string {
 	output := ""
 	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Name, GoTypeFor(t))
