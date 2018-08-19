@@ -54,11 +54,11 @@ func (connection Connection) SendLog(logger string, message string) {
 	swig.DeleteWorker_LogMessage(logMessage)
 }
 
-func (connection Connection) SendComponentUpdate(entity_id int64, component_id uint, component_update swig.Schema_ComponentUpdate) {
-	workerComponentupdate := swig.NewWorker_ComponentUpdate()
-	workerComponentupdate.SetComponent_id(component_id)
-	workerComponentupdate.SetSchema_type(component_update)
-	swig.Worker_Connection_SendComponentUpdate(connection.innerConnection, entity_id, workerComponentupdate)
+func (connection Connection) SendComponentUpdate(entityId int64, componentId uint, componentUpdate swig.Schema_ComponentUpdate) {
+	workerComponentUpdate := swig.NewWorker_ComponentUpdate()
+	workerComponentUpdate.SetComponent_id(componentId)
+	workerComponentUpdate.SetSchema_type(componentUpdate)
+	swig.Worker_Connection_SendComponentUpdate(connection.innerConnection, entityId, workerComponentUpdate)
 }
 
 func MakeConnection(workerType string) *Connection {

@@ -8,7 +8,7 @@ func GenerateComponentUpdateType(t ComponentType) string {
 	for _, f := range t.Fields {
 		output += fmt.Sprintf("\t%s %s\n", f.Name, GoTypeFor(OptionType{f.Type}))
 	}
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -20,7 +20,7 @@ func GenerateReadComponentUpdateType(t ComponentType) string {
 		output += fmt.Sprintf("\t\t%s : Read%s(object, %d, 0),\n", f.Name, MethodSuffixForType(OptionType{f.Type}), f.Id)
 	}
 	output += "\t}\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -30,6 +30,6 @@ func GenerateWriteComponentUpdateType(t ComponentType) string {
 	for _, f := range t.Fields {
 		output += fmt.Sprintf("\tWrite%s(object, %d, value.%s)\n", MethodSuffixForType(OptionType{f.Type}), f.Id, f.Name)
 	}
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }

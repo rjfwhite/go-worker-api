@@ -10,6 +10,6 @@ func GenerateUpdateComponentConnectionMethod(t ComponentType) string {
 	output += "\tcomponent_update_fields := swig.Schema_GetComponentUpdateFields(component_update)\n"
 	output += fmt.Sprintf("\tWriteComponentUpdate_%s(component_update_fields, value)\n", t.Name)
 	output += "\tconnection.SendComponentUpdate(entity_id, component_id, component_update)\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }

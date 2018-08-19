@@ -4,8 +4,8 @@ import "fmt"
 
 func GenerateComponentEventCallbacks(t ComponentType) string {
 	output := ""
-	output += fmt.Sprintf("type %sAddedCallback func(entity_id int64, data %s)\n", t.Name, GoTypeFor(t))
-	output += fmt.Sprintf("type %sUpdatedCallback func(entity_id int64, update %s)\n", t.Name, GoTypeFor(t) + "Update")
+	output += fmt.Sprintf("type %sAddedCallback func(entityId int64, data %s)\n", t.Name, GoTypeFor(t))
+	output += fmt.Sprintf("type %sUpdatedCallback func(entityId int64, update %s)\n\n", t.Name, GoTypeFor(t) + "Update")
 	return output
 }
 
@@ -21,7 +21,7 @@ func GenerateAddComponentDispatcherMethod(t ComponentType) string {
 	output += "\t\tcallback(entity_id, component)\n"
 	output += "\t}\n"
 	output += "\tdispatcher.OnComponentAdded(component_id, inner_callback)\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -35,7 +35,7 @@ func GenerateUpdateComponentDispatcherMethod(t ComponentType) string {
 	output += "\t\tcallback(entity_id, component)\n"
 	output += "\t}\n"
 	output += "\tdispatcher.OnComponentUpdated(component_id, inner_callback)\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -44,7 +44,7 @@ func GenerateAuthorityComponentDispatcherMethod(t ComponentType) string {
 	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sAuthority(callback ComponentAuthorityCallback) {\n", t.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
 	output += "\tdispatcher.OnComponentAuthority(component_id, callback)\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -53,6 +53,6 @@ func GenerateRemoveComponentDispatcherMethod(t ComponentType) string {
 	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sRemoved(callback ComponentRemovedCallback) {\n", t.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
 	output += "\tdispatcher.OnComponentRemoved(component_id, callback)\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }

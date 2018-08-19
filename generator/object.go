@@ -8,7 +8,7 @@ func GenerateObjectType(t ObjectType) string {
 	for _, f := range t.Fields {
 		output += fmt.Sprintf("\t%s %s\n", f.Name, GoTypeFor(f.Type))
 	}
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -21,7 +21,7 @@ func GenerateReadObjectType(t ObjectType) string {
 		output += fmt.Sprintf("\t\t%s : Read%s(innerObject, %d, 0),\n", f.Name, MethodSuffixForType(f.Type), f.Id)
 	}
 	output += "\t}\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -32,6 +32,6 @@ func GenerateWriteObjectType(t ObjectType) string {
 	for _, f := range t.Fields {
 		output += fmt.Sprintf("\tWrite%s(innerObject, %d, value.%s)\n", MethodSuffixForType(f.Type), f.Id, f.Name)
 	}
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }

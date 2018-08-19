@@ -11,7 +11,7 @@ func GenerateReadListType(t ListType) string {
 	output += fmt.Sprintf("\t\tresult = append(result, Read%s(object, field, i))\n", MethodSuffixForType(t.Type))
 	output += "\t}\n"
 	output += "\treturn result\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -21,6 +21,6 @@ func GenerateWriteListType(t ListType) string {
 	output += "\tfor _, i := range(value) {\n"
 	output += fmt.Sprintf("\t\tWrite%s(object, field, i)\n", MethodSuffixForType(t.Type))
 	output += "\t}\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }

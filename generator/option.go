@@ -10,7 +10,7 @@ func GenerateReadOptionType(t OptionType) string {
 	output += "\t\treturn &result\n"
 	output += "\t}\n"
 	output += "\treturn nil\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -20,6 +20,6 @@ func GenerateWriteOptionType(t OptionType) string {
 	output += "\tif value != nil {\n"
 	output += fmt.Sprintf("\t\tWrite%s(object, field, *value)\n", MethodSuffixForType(t.Type))
 	output += "\t}\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }

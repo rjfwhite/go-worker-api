@@ -235,7 +235,6 @@ func GenerateMethodsForTypes(types []interface{}) string {
 			result += GenerateWriteOptionType(optionType)
 
 		default:
-			log.Fatal("Unknown type ", typ)
 		}
 	}
 	return result

@@ -14,7 +14,7 @@ func GenerateReadMapType(t MapType) string {
 	output += "\t\tresult[key] = value\n"
 	output += "\t}\n"
 	output += "\treturn result\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }
 
@@ -26,6 +26,6 @@ func GenerateWriteMapType(t MapType) string {
 	output += fmt.Sprintf("\t\tWrite%s(innerObject, 1, k)\n", MethodSuffixForType(t.KeyType))
 	output += fmt.Sprintf("\t\tWrite%s(innerObject, 2, v)\n", MethodSuffixForType(t.ValueType))
 	output += "\t}\n"
-	output += "}\n"
+	output += "}\n\n"
 	return output
 }

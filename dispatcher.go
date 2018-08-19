@@ -4,13 +4,13 @@ import (
 	"github.com/rjfwhite/go-worker-api/swig"
 )
 
-type EntityAddedCallback func(entity_id int64)
-type EntityRemovedCallback func(entity_id int64)
+type EntityAddedCallback func(entityId int64)
+type EntityRemovedCallback func(entityId int64)
 
-type ComponentAddedCallback func(entity_id int64, component_data swig.Worker_ComponentData)
-type ComponentUpdatedCallback func(entity_id int64, component_update swig.Worker_ComponentUpdate)
-type ComponentRemovedCallback func(entity_id int64)
-type ComponentAuthorityCallback func(entity_id int64, is_authoritative bool)
+type ComponentAddedCallback func(entityId int64, componentData swig.Worker_ComponentData)
+type ComponentUpdatedCallback func(entityId int64, componentUpdate swig.Worker_ComponentUpdate)
+type ComponentRemovedCallback func(entityId int64)
+type ComponentAuthorityCallback func(entityId int64, isAuthoritative bool)
 
 type WORKER_OP_TYPE int
 
