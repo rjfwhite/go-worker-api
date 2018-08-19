@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/rjfwhite/go-worker-api/example"
+	"github.com/rjfwhite/go-worker-api/swig"
 )
 
 type EntityAddedCallback func(entity_id int64)
 type EntityRemovedCallback func(entity_id int64)
 
-type ComponentAddedCallback func(entity_id int64, component_data example.Worker_ComponentData)
-type ComponentUpdatedCallback func(entity_id int64, component_update example.Worker_ComponentUpdate)
+type ComponentAddedCallback func(entity_id int64, component_data swig.Worker_ComponentData)
+type ComponentUpdatedCallback func(entity_id int64, component_update swig.Worker_ComponentUpdate)
 type ComponentRemovedCallback func(entity_id int64)
 type ComponentAuthorityCallback func(entity_id int64, is_authoritative bool)
 
@@ -97,13 +97,13 @@ func (dispatcher* Dispatcher) OnComponentAuthority(component_id uint, callback C
 	dispatcher.ComponentAuthorityCallbacks[component_id] = append(dispatcher.ComponentAuthorityCallbacks[component_id], callback)
 }
 
-func (dispatcher Dispatcher) dispatchOps(ops []example.Worker_Op) {
+func (dispatcher Dispatcher) dispatchOps(ops []swig.Worker_Op) {
 	for _, op := range(ops) {
 		dispatcher.dispatchOp(op)
 	}
 }
 
-func (dispatcher Dispatcher) dispatchOp(op example.Worker_Op) {
+func (dispatcher Dispatcher) dispatchOp(op swig.Worker_Op) {
 	opType := WORKER_OP_TYPE(op.GetOp_type())
 	switch opType {
 	case WORKER_OP_TYPE_ADD_ENTITY:

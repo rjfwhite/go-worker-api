@@ -8,13 +8,23 @@ import (
 	"github.com/eiannone/keyboard"
 )
 
+type Prefab struct {
+	Emoji string
+	Color int
+}
+
 var (
 	connection          *Connection
 	positionAuthorities       = make(map[int64]bool)
 	positions                 = make(map[int64]Coordinates)
+	names                     = make(map[int64]string)
 	playerEntityId      int64 = 0
 	x                         = 0
 	y                         = 0
+	entityNameToPrefab        = map[string]Prefab{
+		"Tree":   {"🌲", tm.GREEN},
+		"Player": {"🚶", tm.WHITE},
+	}
 )
 
 func main() {
@@ -39,6 +49,10 @@ func main() {
 		dispatcher.OnPositionAdded(func(entityId int64, data Position) {
 			positions[entityId] = data.Coords
 			fmt.Printf("GOT POS %d\n", entityId, data.Coords.X, data.Coords.Y, data.Coords.Z)
+		})
+
+		dispatcher.OnMetaDataAdded(func(entityId int64, data MetaData) {
+			names[entityId] = data.EntityType
 		})
 
 		dispatcher.OnEntityAclAdded(func(entityId int64, data EntityAcl) {
@@ -81,9 +95,10 @@ func applyUpdates() {
 
 func renderScreen() {
 	tm.Clear()
-	for _, position := range positions {
+	for entityId, position := range positions {
 		tm.MoveCursor(int(position.X), int(position.Z))
-		tm.Println(tm.Color("🌳", tm.GREEN))
+		prefab := entityNameToPrefab[names[entityId]]
+		tm.Println(tm.Color(prefab.Emoji, prefab.Color))
 	}
 
 	_, key, _ := keyboard.GetKeyAsync()

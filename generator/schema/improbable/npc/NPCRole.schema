@@ -1,6 +1,0 @@
-package improbable.npc;
-
-enum NPCRole {
-  LUMBERJACK = 0;
-  WIZARD = 1;
-}

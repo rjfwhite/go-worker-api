@@ -15,8 +15,8 @@ func GenerateAddComponentDispatcherMethod(t ComponentType) string {
 	output := ""
 	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sAdded(callback %sAddedCallback) {\n", t.Name, t.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
-	output += "\tinner_callback := func(entity_id int64, component_data example.Worker_ComponentData) {\n"
-	output += "\t\tdata_fields := example.Schema_GetComponentDataFields(component_data.GetSchema_type())\n"
+	output += "\tinner_callback := func(entity_id int64, component_data swig.Worker_ComponentData) {\n"
+	output += "\t\tdata_fields := swig.Schema_GetComponentDataFields(component_data.GetSchema_type())\n"
 	output += fmt.Sprintf("\t\tcomponent := ReadComponent_%s(data_fields)\n", t.Name)
 	output += "\t\tcallback(entity_id, component)\n"
 	output += "\t}\n"
@@ -29,8 +29,8 @@ func GenerateUpdateComponentDispatcherMethod(t ComponentType) string {
 	output := ""
 	output += fmt.Sprintf("func (dispatcher *Dispatcher) On%sUpdated(callback %sUpdatedCallback) {\n", t.Name, t.Name)
 	output += fmt.Sprintf("\tcomponent_id := uint(%d)\n", t.Id)
-	output += "\tinner_callback := func(entity_id int64, component_update example.Worker_ComponentUpdate) {\n"
-	output += "\t\tdata_fields := example.Schema_GetComponentUpdateFields(component_update.GetSchema_type())\n"
+	output += "\tinner_callback := func(entity_id int64, component_update swig.Worker_ComponentUpdate) {\n"
+	output += "\t\tdata_fields := swig.Schema_GetComponentUpdateFields(component_update.GetSchema_type())\n"
 	output += fmt.Sprintf("\t\tcomponent := ReadComponentUpdate_%s(data_fields)\n", t.Name)
 	output += "\t\tcallback(entity_id, component)\n"
 	output += "\t}\n"

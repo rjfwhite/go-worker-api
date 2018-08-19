@@ -10,7 +10,7 @@
 
 // source: example.i
 
-package example
+package swig
 
 /*
 #define intgo swig_intgo

@@ -17,16 +17,16 @@ func GenerateEnumType(t EnumType) string {
 
 func GenerateReadEnumType(t EnumType) string {
 	output := ""
-	output += fmt.Sprintf("func Read%s(object example.Schema_Object, field uint, index uint) %s {\n", MethodSuffixForType(t), GoTypeFor(t))
-	output += fmt.Sprintf("\treturn %s(example.Schema_IndexEnum(object, field, index))\n", t.Name)
+	output += fmt.Sprintf("func Read%s(object swig.Schema_Object, field uint, index uint) %s {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += fmt.Sprintf("\treturn %s(swig.Schema_IndexEnum(object, field, index))\n", t.Name)
 	output += "}\n"
 	return output
 }
 
 func GenerateWriteEnumType(t EnumType) string {
 	output := ""
-	output += fmt.Sprintf("func Write%s(object example.Schema_Object, field uint, value %s) {\n", MethodSuffixForType(t), GoTypeFor(t))
-	output += "\texample.Schema_AddEnum(object, field, uint(value))\n"
+	output += fmt.Sprintf("func Write%s(object swig.Schema_Object, field uint, value %s) {\n", MethodSuffixForType(t), GoTypeFor(t))
+	output += "\tswig.Schema_AddEnum(object, field, uint(value))\n"
 	output += "}\n"
 	return output
 }

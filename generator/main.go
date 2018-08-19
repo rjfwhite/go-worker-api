@@ -17,10 +17,6 @@ type TypeRef struct {
 	Name string
 }
 
-func (t TypeRef) String() string {
-	return fmt.Sprintf("TypeRef(%s)", t.Name)
-}
-
 type SchemaField struct {
 	Name string
 	Type interface{}
@@ -29,10 +25,6 @@ type SchemaField struct {
 
 type PrimitiveType struct {
 	Name string
-}
-
-func (t PrimitiveType) String() string {
-	return fmt.Sprintf("PrimitiveType(%s)", t.Name)
 }
 
 type EnumType struct {
@@ -61,7 +53,7 @@ type MapType struct {
 }
 
 func GoTypeFor(t interface{}) string {
-	var primitive_type_to_go_type = map[string]string{
+	var primitiveTypeToGoType = map[string]string{
 		"int32":    "int",
 		"int64":    "int64",
 		"uint32":   "uint",
@@ -82,7 +74,7 @@ func GoTypeFor(t interface{}) string {
 
 	switch t.(type) {
 	case PrimitiveType:
-		return primitive_type_to_go_type[t.(PrimitiveType).Name]
+		return primitiveTypeToGoType[t.(PrimitiveType).Name]
 	case EnumType:
 		return t.(EnumType).Name
 	case ListType:
@@ -100,7 +92,7 @@ func GoTypeFor(t interface{}) string {
 }
 
 func FunctionFamilyFor(t interface{}) string {
-	var primitive_type_to_function_family = map[string]string{
+	var primitiveTypeToFunctionFamily = map[string]string{
 		"int32":    "Int32",
 		"int64":    "Int64",
 		"uint32":   "Uint32",
@@ -121,7 +113,7 @@ func FunctionFamilyFor(t interface{}) string {
 
 	switch t.(type) {
 	case PrimitiveType:
-		return primitive_type_to_function_family[t.(PrimitiveType).Name]
+		return primitiveTypeToFunctionFamily[t.(PrimitiveType).Name]
 	case EnumType:
 		return "Enum"
 	case ListType:
@@ -157,40 +149,40 @@ func MethodSuffixForType(t interface{}) string {
 }
 
 func TraverseTypeDependencies(types []interface{}) []interface{} {
-	found_types := map[string]interface{}{}
-	exploration_queue := types
+	foundTypes := map[string]interface{}{}
+	explorationQueue := types
 
-	for len(exploration_queue) > 0 {
-		next_type := exploration_queue[0]
-		exploration_queue = exploration_queue[1:]
-		found_types[GoTypeFor(next_type)] = next_type
-		switch next_type.(type) {
+	for len(explorationQueue) > 0 {
+		nextType := explorationQueue[0]
+		explorationQueue = explorationQueue[1:]
+		foundTypes[GoTypeFor(nextType)] = nextType
+		switch nextType.(type) {
 		case ComponentType:
-			for _, field := range next_type.(ComponentType).Fields {
-				exploration_queue = append(exploration_queue, field.Type)
-				exploration_queue = append(exploration_queue, OptionType{field.Type})
+			for _, field := range nextType.(ComponentType).Fields {
+				explorationQueue = append(explorationQueue, field.Type)
+				explorationQueue = append(explorationQueue, OptionType{field.Type})
 			}
 
 		case ObjectType:
-			for _, field := range next_type.(ObjectType).Fields {
-				exploration_queue = append(exploration_queue, field.Type)
+			for _, field := range nextType.(ObjectType).Fields {
+				explorationQueue = append(explorationQueue, field.Type)
 			}
 
 		case ListType:
-			exploration_queue = append(exploration_queue, next_type.(ListType).Type)
+			explorationQueue = append(explorationQueue, nextType.(ListType).Type)
 
 		case MapType:
-			exploration_queue = append(exploration_queue, next_type.(MapType).KeyType)
-			exploration_queue = append(exploration_queue, next_type.(MapType).ValueType)
+			explorationQueue = append(explorationQueue, nextType.(MapType).KeyType)
+			explorationQueue = append(explorationQueue, nextType.(MapType).ValueType)
 
 		case OptionType:
-			exploration_queue = append(exploration_queue, next_type.(OptionType).Type)
+			explorationQueue = append(explorationQueue, nextType.(OptionType).Type)
 		}
 	}
 
 	result := []interface{}{}
-	for _, found_type := range (found_types) {
-		result = append(result, found_type)
+	for _, foundType := range foundTypes {
+		result = append(result, foundType)
 	}
 
 	return result
@@ -201,48 +193,49 @@ func GenerateMethodsForTypes(types []interface{}) string {
 	for _, typ := range types {
 		switch typ.(type) {
 		case ComponentType:
-			component_type := typ.(ComponentType)
-			result += GenerateComponentType(component_type)
-			result += GenerateComponentUpdateType(component_type)
-			result += GenerateReadComponentType(component_type)
-			result += GenerateWriteComponentType(component_type)
-			result += GenerateReadComponentUpdateType(component_type)
-			result += GenerateWriteComponentUpdateType(component_type)
-			result += GenerateComponentEventCallbacks(component_type)
-			result += GenerateAddComponentDispatcherMethod(component_type)
-			result += GenerateUpdateComponentDispatcherMethod(component_type)
-			result += GenerateAuthorityComponentDispatcherMethod(component_type)
-			result += GenerateRemoveComponentDispatcherMethod(component_type)
-			result += GenerateUpdateComponentConnectionMethod(component_type)
+			componentType := typ.(ComponentType)
+			result += GenerateComponentType(componentType)
+			result += GenerateComponentUpdateType(componentType)
+			result += GenerateReadComponentType(componentType)
+			result += GenerateWriteComponentType(componentType)
+			result += GenerateReadComponentUpdateType(componentType)
+			result += GenerateWriteComponentUpdateType(componentType)
+			result += GenerateComponentEventCallbacks(componentType)
+			result += GenerateAddComponentDispatcherMethod(componentType)
+			result += GenerateUpdateComponentDispatcherMethod(componentType)
+			result += GenerateAuthorityComponentDispatcherMethod(componentType)
+			result += GenerateRemoveComponentDispatcherMethod(componentType)
+			result += GenerateUpdateComponentConnectionMethod(componentType)
 
 		case EnumType:
-			enum_type := typ.(EnumType)
-			result += GenerateEnumType(enum_type)
-			result += GenerateReadEnumType(enum_type)
-			result += GenerateWriteEnumType(enum_type)
+			enumType := typ.(EnumType)
+			result += GenerateEnumType(enumType)
+			result += GenerateReadEnumType(enumType)
+			result += GenerateWriteEnumType(enumType)
 
 		case ObjectType:
-			object_type := typ.(ObjectType)
-			result += GenerateObjectType(object_type)
-			result += GenerateReadObjectType(object_type)
-			result += GenerateWriteObjectType(object_type)
+			objectType := typ.(ObjectType)
+			result += GenerateObjectType(objectType)
+			result += GenerateReadObjectType(objectType)
+			result += GenerateWriteObjectType(objectType)
 
 		case ListType:
-			list_type := typ.(ListType)
-			result += GenerateReadListType(list_type)
-			result += GenerateWriteListType(list_type)
+			listType := typ.(ListType)
+			result += GenerateReadListType(listType)
+			result += GenerateWriteListType(listType)
 
 		case MapType:
-			map_type := typ.(MapType)
-			result += GenerateReadMapType(map_type)
-			result += GenerateWriteMapType(map_type)
+			mapType := typ.(MapType)
+			result += GenerateReadMapType(mapType)
+			result += GenerateWriteMapType(mapType)
 
 		case OptionType:
-			option_type := typ.(OptionType)
-			result += GenerateReadOptionType(option_type)
-			result += GenerateWriteOptionType(option_type)
+			optionType := typ.(OptionType)
+			result += GenerateReadOptionType(optionType)
+			result += GenerateWriteOptionType(optionType)
 
 		default:
+			log.Fatal("Unknown type ", typ)
 		}
 	}
 	return result
@@ -255,6 +248,9 @@ func main() {
 	positionFields := []SchemaField{{Name: "Coords", Type: coordinatesType, Id: 1}}
 	positionComponentType := ComponentType{Package: "", Name: "Position", Fields: positionFields, Id: 54}
 
+	metaDataFields := []SchemaField{{Name: "EntityType", Type: PrimitiveType{Name:"string"}, Id: 1}}
+	metaDataComponentType := ComponentType{Package: "", Name: "MetaData", Fields: metaDataFields, Id: 53}
+
 	attributeSetType := ObjectType{Package: "", Name: "WorkerAttributeSet ", Fields: []SchemaField{{Name: "attribute", Type: ListType{Type: PrimitiveType{"string"}}, Id: 1}}}
 	requirementSetType := ObjectType{Package: "", Name: "WorkerRequirementSet ", Fields: []SchemaField{{Name: "attribute_set", Type: ListType{attributeSetType}, Id: 1}}}
 	aclFields := []SchemaField{
@@ -265,9 +261,7 @@ func main() {
 
 	testEnum := EnumType{Name: "Color", values: map[int]string{1: "Blue", 2: "Red"}}
 
-	all_types := TraverseTypeDependencies([]interface{}{positionComponentType, aclComponentType, testEnum})
+	allTypes := TraverseTypeDependencies([]interface{}{positionComponentType, aclComponentType, testEnum, metaDataComponentType})
 
-	TranslateFiles()
-
-	ioutil.WriteFile("output.go.generated", []byte("package main\n\n" +GenerateMethodsForTypes(all_types)), 0644)
+	ioutil.WriteFile("output.go.generated", []byte("package main\n\n" +GenerateMethodsForTypes(allTypes)), 0644)
 }
