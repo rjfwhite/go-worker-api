@@ -16,7 +16,7 @@ func WritePrimitive_sint32(object swig.Schema_Object, field uint, value int) {
 func ReadPrimitive_string(object swig.Schema_Object, field uint, index uint) string {
 	length := swig.Schema_IndexBytesLength(object, field, index)
 	unsafePtr := unsafe.Pointer(swig.Schema_IndexBytes(object, field, index))
-	bytes := (*(*[2048]byte)(unsafePtr))[0:length]
+	bytes := (*(*[4096]byte)(unsafePtr))[0:length]
 	return string(bytes)
 }
 
@@ -118,11 +118,13 @@ func WritePrimitive_EntityId(object swig.Schema_Object, field uint, value int64)
 }
 
 func ReadPrimitive_bytes(object swig.Schema_Object, field uint, index uint) []byte {
-	return []byte{*swig.Schema_IndexBytes(object, field, index)}
+	length := swig.Schema_IndexBytesLength(object, field, index)
+	unsafePtr := unsafe.Pointer(swig.Schema_IndexBytes(object, field, index))
+	return (*(*[4096]byte)(unsafePtr))[0:length]
 }
 
-func WritePrimitive_bytes(object swig.Schema_Object, field uint, value []byte) {
-	swig.Schema_AddBytes(object, field, &value[0], uint(len(value)))
+func WritePrimitive_bytes(object swig.Schema_Object, field uint, value[]byte) {
+	swig.Schema_AddBytes(object, field, &(value[0]), uint(len(value)))
 }
 
 func ReadPrimitive_sint64(object swig.Schema_Object, field uint, index uint) int64 {

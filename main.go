@@ -4,7 +4,6 @@ import (
 	tm "github.com/buger/goterm"
 	"time"
 	"fmt"
-	"math"
 	"github.com/eiannone/keyboard"
 )
 
@@ -43,12 +42,10 @@ func main() {
 		connection.SendLog("mylogger", "Hello, World!")
 
 		dispatcher.OnEntityAdded(func(entityId int64) {
-			fmt.Printf("ENTITY ADDED %d", entityId)
 		})
 
 		dispatcher.OnPositionAdded(func(entityId int64, data Position) {
 			positions[entityId] = data.Coords
-			fmt.Printf("GOT POS %d\n", entityId, data.Coords.X, data.Coords.Y, data.Coords.Z)
 		})
 
 		dispatcher.OnMetaDataAdded(func(entityId int64, data MetaData) {
@@ -72,14 +69,6 @@ func main() {
 
 		for connection.IsConnected() {
 			dispatcher.dispatchOps(connection.ReadOps(0))
-			for entityId, isAuthoritative := range positionAuthorities {
-				if isAuthoritative && entityId != playerEntityId {
-					x := 5.0 + math.Sin(float64(time.Now().UnixNano())/1000000000.0)*5.0
-					newCoordinates := Coordinates{x, 2.0, 3.0}
-					connection.SendPositionUpdate(entityId, PositionUpdate{&newCoordinates})
-				}
-			}
-			applyUpdates()
 			renderScreen()
 			time.Sleep(time.Millisecond * 100)
 		}
@@ -87,10 +76,6 @@ func main() {
 	} else {
 		fmt.Println("Did not Connect!")
 	}
-}
-
-func applyUpdates() {
-
 }
 
 func renderScreen() {
@@ -122,7 +107,5 @@ func renderScreen() {
 	tm.MoveCursor(int(x), int(y))
 	tm.MoveCursor(0, 20)
 	tm.Println(tm.Background("SpatialOS Golang Worker                                        ", tm.RED))
-	//tm.Println(tm.Color("🚶", tm.BLUE))
-
 	tm.Flush()
 }
