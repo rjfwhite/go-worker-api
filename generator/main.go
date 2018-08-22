@@ -148,7 +148,7 @@ func MethodSuffixForType(t interface{}) string {
 	return ""
 }
 
-func TraverseTypeDependencies(types []interface{}) []interface{} {
+func TraverseTypeDependencies(types []interface{}) map[string]interface{} {
 	foundTypes := map[string]interface{}{}
 	explorationQueue := types
 
@@ -180,12 +180,7 @@ func TraverseTypeDependencies(types []interface{}) []interface{} {
 		}
 	}
 
-	result := []interface{}{}
-	for _, foundType := range foundTypes {
-		result = append(result, foundType)
-	}
-
-	return result
+	return foundTypes
 }
 
 func GenerateMethodsForTypes(types []interface{}) string {
@@ -262,5 +257,12 @@ func main() {
 
 	allTypes := TraverseTypeDependencies([]interface{}{positionComponentType, aclComponentType, testEnum, metaDataComponentType})
 
-	ioutil.WriteFile("output.go.generated", []byte("package main\n\n" +GenerateMethodsForTypes(allTypes)), 0644)
+
+	allTypeValues := []interface{}{}
+	for foundName, foundType := range allTypes {
+		fmt.Printf("%s\n", foundName)
+		foundType = append(allTypeValues, foundType)
+	}
+
+	ioutil.WriteFile("output.go.generated", []byte("package main\n\n" +GenerateMethodsForTypes(allTypeValues)), 0644)
 }

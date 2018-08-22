@@ -38,7 +38,6 @@ func main() {
 
 	fmt.Println("Checking if connected")
 	if connection.Connect("localhost", 7777) {
-		fmt.Println("Connected!")
 		connection.SendLog("mylogger", "Hello, World!")
 
 		dispatcher.OnEntityAdded(func(entityId int64) {
@@ -86,7 +85,7 @@ func renderScreen() {
 		tm.Println(tm.Color(prefab.Emoji, prefab.Color))
 	}
 
-	_, key, _ := keyboard.GetKeyAsync()
+	_, key, _ := keyboard.GetKey()
 
 	switch key {
 	case keyboard.KeyArrowUp:
